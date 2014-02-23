@@ -1,5 +1,6 @@
 module DiagramLanguage
 
+import lang::java::m3::AST;
 import lang::java::m3::TypeSymbol;
 
 /*
@@ -12,14 +13,19 @@ import lang::java::m3::TypeSymbol;
 data Diagram = diagram(set[Class] classes, set[Relation] relations);
 
 /**
- * The class object in the diagram.
+ * The class object in the diagram.onzeclasse
  */
-data Class = class(loc id, set[Field] variables, set[Field] functions);
+data Class = class(loc id, set[Field] variables, set[Method] functions);
 
 /**
- * A field of a class (can either be a variable or a function)
+ * A field of a class (a variable)
  */
 data Field = field(loc id, TypeSymbol typeSymbol);
+
+/**
+ * A method of a class (a function)
+ */
+data Method = method(Declaration dec);
 
 /**
  * The relations possible between two classes.

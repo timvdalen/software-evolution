@@ -23,10 +23,13 @@ str diagram2dot(Diagram diagram) ="<header>
 private str class2dot(Class cls) = "<className(cls)> [
 	'  label = \"{<className(cls)>| " +
 	"<for (f <- cls.variables) {><field2dot(f)>\\l<}>|" +
-	"<for (f <- cls.functions) {><field2dot(f)>\\l<}>" +
+	"<for (m <- cls.functions) {><method2dot(m)>\\l<}>" +
 	"}\"\n]";
 	
 private str field2dot(Field fld) = "<fieldName(fld)>: <typeName(fld.typeSymbol)>";
+
+// TODO: verbeter deze
+private str method2dot(Method meth) = "<meth.\return>: <meth.name>(<for (p <- meth.parameters) {><param(p)>,<}>)";
 	
 private str relation2dot(Relation relation) = {
 	switch(relation) {
@@ -73,6 +76,9 @@ private str typeName(TypeSymbol ts) = {
 	class(l, _) = ts;
 	locName(l);
 };
+
+// TODO: nodig voor methods maar moet verbeterd
+private str param(Declaration d) = "<d.\type>: <d.name>";
 
 str locName(loc l) = {
 	if (/<x: [^\/]*>$/ := l.path) x;
