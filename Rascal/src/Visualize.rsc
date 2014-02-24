@@ -6,12 +6,12 @@ module Visualize
 
 import DiagramLanguage;
 import lang::java::m3::TypeSymbol;
-import IO;
+import lang::ofg::ast::FlowLanguage;
 
 /**
  * Writes diagram to file in dot file format
  */
-str diagram2dot(Diagram diagram) ="<header>
+public str diagram2dot(Diagram diagram) ="<header>
 	'<for (c <- diagram.classes) {>
 	'  <class2dot(c)> 
 	'<}>
@@ -28,8 +28,8 @@ private str class2dot(Class cls) = "<className(cls)> [
 	
 private str field2dot(Field fld) = "<fieldName(fld)>: <typeName(fld.typeSymbol)>";
 
-// TODO: verbeter deze
-private str method2dot(Method meth) = "<meth.\return>: <meth.name>(<for (p <- meth.parameters) {><param(p)>,<}>)";
+// TODO: verbeter deze even tijdelijk verplaatst door todo functie
+private str method2dot(Method meth) = "todo";
 	
 private str relation2dot(Relation relation) = {
 	switch(relation) {
@@ -73,12 +73,17 @@ private str fieldName(Field f) = locName(f.id);
 
 /** Gets the name of the TypeSymbol */
 private str typeName(TypeSymbol ts) = {
-	class(l, _) = ts;
-	locName(l);
+	switch (ts) { // switching of classes ts can be
+		case class(l, _): return locName(l);
+		case interface(l, _): return locName(l);
+		case enum(l): return locName(l);
+		case array(ts2, _): return typeName(ts2);
+		case other: return "<other>"; // take the name of the object
+	};
 };
 
 // TODO: nodig voor methods maar moet verbeterd
-private str param(Declaration d) = "<d.\type>: <d.name>";
+private str param(Decl d) = "<d.\type>: <d.name>";
 
 str locName(loc l) = {
 	if (/<x: [^\/]*>$/ := l.path) x;
