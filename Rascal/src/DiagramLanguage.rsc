@@ -20,12 +20,12 @@ data Class = class(loc id, set[Field] variables, set[Method] functions);
 /**
  * A field of a class (a variable)
  */
-data Field = field(loc id, TypeSymbol typeSymbol);
+data Field = field(loc id, TypeSymbol typeSymbol, set[Modifier] modifiers);
 
 /**
  * A method of a class (a function)
  */
-data Method = method(Declaration dec);
+data Method = method(Declaration dec, set[Modifier] modifiers);
 
 /**
  * The relations possible between two classes.

@@ -16,20 +16,19 @@ public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(
 
 // Static informatie uit classes
 public set[Class] onzeClasses(M3 m) = 
-		{Class::class(c,
-					{Field::field(f, typ)| <f, typ> <- fieldWithTypePerClass(m,c)},
-					onzeMethods(m, c)) | c <- classes(m)};
-
-public set[Method] onzeMethods(M3 m, loc c) = {Method::method(getMethodAST(meth, model = m)) | meth <- methods(m,c)};
+		{onzeClass(m,c) | c <- classes(m)};
 
 public Class onzeClass(M3 m, loc c) = 
 		Class::class(c,
-					{Field::field(f, typ)| <f, typ> <- fieldWithTypePerClass(m,c)},
+					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
+
+public set[Method] onzeMethods(M3 m, loc c) = 
+		{Method::method(getMethodAST(meth, model = m), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = 
-		{Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ)) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)} +
+		{Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)} +
 		{Relation::dependency(onzeClass(m, c), onzeClass(m, to)) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m)} +
 		{Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends} +
 		{Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
@@ -43,6 +42,9 @@ private rel[loc, TypeSymbol] fieldWithTypePerClass(M3 m, loc c) =
  
 public rel[loc, loc] fieldWithClass(M3 m) = 
 		{<field, class> | <class, field> <- m@containment, isField(field)};
+
+public set[Modifier] modifierForLoc(M3 m, loc c) =
+		{modi | <c,modi> <- m@modifiers};
 
 public rel[loc, loc] fieldAssociations(M3 m) =
 		 {<field, class> | <field, class> <- m@typeDependency, isField(field), isClass(class), class <- m@declarations<name>};
