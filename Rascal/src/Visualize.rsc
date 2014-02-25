@@ -5,6 +5,7 @@ module Visualize
  */
 
 import DiagramLanguage;
+import lang::java::m3::AST;
 import lang::java::m3::TypeSymbol;
 import lang::ofg::ast::FlowLanguage;
 
@@ -26,13 +27,27 @@ private str class2dot(Class cls) = "<className(cls)> [
 	"<for (m <- cls.functions) {><method2dot(m)>\\l<}>" +
 	"}\"\n]";
 	
-private str field2dot(Field fld) = "<fieldName(fld)>: <typeName(fld.typeSymbol)>";
+private str field2dot(Field fld) = 
+	"<modifiers2dot(fld.modifiers, fieldName(fld))>: <typeName(fld.typeSymbol)>";
 
 private str method2dot(Method meth) =
-	 "<meth.name>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
+	 "<modifiers2dot(meth.modifiers, meth.name)>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
 private str parameters2dot(rel[TypeSymbol, str] parameters) = 
 	"<for(<ts, name> <- parameters){><name>: <typeName(ts)>, <}>";
 	
+/** Takes a set of modifiers and modifies field to show the Modifiers in UML. */
+private str modifiers2dot(set[Modifier] mods, str field) = {
+	// add static modifier to field
+	if (Modifier::\static() in mods) field = "\<U field\>";
+	
+	// add visibility modifier to attr
+	if (Modifier::\private() in mods) field = "- <field>";
+	else if (Modifier::\public() in mods) field = "+ <field>";
+	else if (Modifier::\protected() in mods) field = "# <field>";
+	
+	return field;
+};
+
 private str relation2dot(Relation relation) = {
 	switch(relation) {
 		case association(from, to, field):
