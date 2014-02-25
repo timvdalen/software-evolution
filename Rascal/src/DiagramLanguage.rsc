@@ -20,7 +20,7 @@ data Class = class(loc id, set[Field] variables, set[Method] functions);
 /**
  * A field of a class (a variable)
  */
-data Field = field(loc id, TypeSymbol typeSymbol, set[Modifier] modifiers);
+data Field = field(loc id, /*str name,*/ TypeSymbol typeSymbol, set[Modifier] modifiers);
 
 /**
  * A method of a class (a function)

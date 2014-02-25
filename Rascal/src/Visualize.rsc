@@ -8,6 +8,7 @@ import DiagramLanguage;
 import lang::java::m3::AST;
 import lang::java::m3::TypeSymbol;
 import lang::ofg::ast::FlowLanguage;
+import String;
 
 /**
  * Writes diagram to file in dot file format
@@ -32,8 +33,10 @@ private str field2dot(Field fld) =
 
 private str method2dot(Method meth) =
 	 "<modifiers2dot(meth.modifiers, meth.name)>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
+
 private str parameters2dot(rel[TypeSymbol, str] parameters) = 
-	"<for(<ts, name> <- parameters){><name>: <typeName(ts)>, <}>";
+	// replace last gets rid of extra ", " from loop
+	replaceLast("<for(<ts, name> <- parameters){><name>: <typeName(ts)>, <}>", ", ", "");
 	
 /** Takes a set of modifiers and modifies field to show the Modifiers in UML. */
 private str modifiers2dot(set[Modifier] mods, str field) = {
