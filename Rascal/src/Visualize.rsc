@@ -28,8 +28,10 @@ private str class2dot(Class cls) = "<className(cls)> [
 	
 private str field2dot(Field fld) = "<fieldName(fld)>: <typeName(fld.typeSymbol)>";
 
-// TODO: verbeter deze even tijdelijk verplaatst door todo functie
-private str method2dot(Method meth) = "todo";
+private str method2dot(Method meth) =
+	 "<meth.name>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
+private str parameters2dot(rel[TypeSymbol, str] parameters) = 
+	"<for(<ts, name> <- parameters){><name>: <typeName(ts)>, <}>";
 	
 private str relation2dot(Relation relation) = {
 	switch(relation) {
@@ -78,7 +80,11 @@ private str typeName(TypeSymbol ts) = {
 		case interface(l, _): return locName(l);
 		case enum(l): return locName(l);
 		case array(ts2, _): return typeName(ts2);
-		case other: return "<other>"; // take the name of the object
+		case other: {// take the name of the object without ()
+			str string = "<other>";
+			if (/<x: .*>\(\)$/ := string) return x;
+			else return string;
+		}
 	};
 };
 
