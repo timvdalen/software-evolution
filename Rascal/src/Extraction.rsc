@@ -6,6 +6,7 @@ import lang::java::jdt::m3::AST;
 import lang::ofg::ast::Java2OFG;
 import lang::ofg::ast::FlowLanguage;
 import DiagramLanguage;
+import Set;
 
 public M3 m = createM3FromEclipseProject(|project://eLib|);
 
@@ -24,7 +25,7 @@ public Class onzeClass(M3 m, loc c) =
 					onzeMethods(m, c));
 
 public set[Method] onzeMethods(M3 m, loc c) = 
-		{Method::method(getMethodAST(meth, model = m), modifierForLoc(m, meth)) | meth <- methods(m,c)};
+		{Method::method(meth, getName(m, meth), getReturn(m, meth), getParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = 
@@ -53,3 +54,25 @@ public rel[loc, loc] fieldDependencies(M3 m) =
 		{<var, class> | <var, class> <- m@typeDependency, isVariable(var), isClass(class), class <- m@declarations<name>} +
 		{<param, class> | <param, class> <- m@typeDependency, isParameter(param), isClass(class), class <- m@declarations<name>};
 
+public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
+
+public TypeSymbol getReturn(M3 m, loc meth) = {
+		if (meth.scheme == "java+constructor") {
+			return getOneFrom({TypeSymbol::\class(c, typ.parameters)| <meth, typ> <- m@types, <c, meth> <- m@containment, isMethod(meth), isClass(c)});
+		}
+		if (meth.scheme == "java+method") {
+			return getOneFrom({typ.returnType| <meth, typ> <- m@types, isMethod(meth)});
+		}
+};
+
+// deze werkt
+public set[loc] getMethParam(M3 m, loc meth) = 
+		{param | <meth, param> <- m@containment, isParameter(param), isMethod(meth)};
+
+// deze werkt niet
+public rel[TypeSymbol, str] getAllParamSpec(M3 m, loc meth) =
+		{getParamSpec(m, p) | p <- getMethParam(m, meth)};
+
+// deze werkt
+public rel[TypeSymbol, str] getParamSpec(M3 m, loc p) =
+		{<typ, name> | <p, typ> <- m@types, <name, p> <- m@names, isParameter(p)};
