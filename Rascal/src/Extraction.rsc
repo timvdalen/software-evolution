@@ -8,10 +8,6 @@ import lang::ofg::ast::FlowLanguage;
 import DiagramLanguage;
 import Set;
 
-public M3 m = createM3FromEclipseProject(|project://eLib|);
-
-public Program p = createOFG(|project://eLib|);
-
 // Informatie over heel programma
 public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(m));
 
@@ -28,11 +24,22 @@ public set[Method] onzeMethods(M3 m, loc c) =
 		{Method::method(meth, getName(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
-public set[Relation] onzeRelaties(M3 m) = 
-		{Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, /*getName(m, from),*/ typ, modifierForLoc(m, from))) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)} +
-		{Relation::dependency(from, to) | from <- onzeClasses(m), meth <- from.functions, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)} +
-		{Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends} +
-		{Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
+public set[Relation] onzeRelaties(M3 m) = {
+
+	// associations
+	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
+		 <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
+		 
+	// dependency (can not be an association, dependency is weaker) like class A {void f(B b){b.g()}}
+	set[Relation] dependencies1 = {Relation::dependency(from, to) |
+		 from <- onzeClasses(m), meth <- from.functions, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)}
+		 - {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations};
+		 
+	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
+	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
+	
+	return associations + dependencies1 + generalizations + realizations;
+};
 
 // Helper functies
 public rel[loc, TypeSymbol] fieldWithType(M3 m) =
