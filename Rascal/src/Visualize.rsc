@@ -40,13 +40,13 @@ private str parameters2dot(rel[TypeSymbol, str] parameters) =
 	
 /** Takes a set of modifiers and modifies field to show the Modifiers in UML. */
 private str modifiers2dot(set[Modifier] mods, str field) = {
-	// add static modifier to field
-	if (Modifier::\static() in mods) field = "\<U field\>";
-	
 	// add visibility modifier to attr
 	if (Modifier::\private() in mods) field = "- <field>";
 	else if (Modifier::\public() in mods) field = "+ <field>";
 	else if (Modifier::\protected() in mods) field = "# <field>";
+	
+	// add static modifier to field (we use $ to indicate $tatic)
+	if (Modifier::\static() in mods) field = "$<field>";
 	
 	return field;
 };
