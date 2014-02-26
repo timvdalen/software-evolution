@@ -48,7 +48,6 @@ OFG calc(bool forward) {
 	if(forward) {
 		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genforward, kill, true)};
 	} else {
-		println("lala");
 		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genbackward, kill, false)};
 	}
 }

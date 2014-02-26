@@ -3,9 +3,8 @@ module Extraction
 import IO;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
-import lang::ofg::ast::Java2OFG;
-import lang::ofg::ast::FlowLanguage;
 import DiagramLanguage;
+import OFG;
 import Set;
 
 // Informatie over heel programma
@@ -17,7 +16,7 @@ public set[Class] onzeClasses(M3 m) =
 
 public Class onzeClass(M3 m, loc c) = 
 		Class::class(c,
-					{Field::field(f, /*getName(m, f),*/ typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
+					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
 
 public set[Method] onzeMethods(M3 m, loc c) = 
@@ -25,7 +24,7 @@ public set[Method] onzeMethods(M3 m, loc c) =
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
-
+	
 	// associations
 	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
 		 <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
@@ -37,6 +36,11 @@ public set[Relation] onzeRelaties(M3 m) = {
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
+	
+	// relations from OFG
+	set[loc,loc] OFGrel = OFG::calc(true) + OFG::calc(false); 
+	set[loc,loc] OFGassocs = {<field, ref> | <field, ref> <- OFGrel, isField(field), ref != |id:///|};
+	
 	
 	return associations + dependencies1 + generalizations + realizations;
 };
