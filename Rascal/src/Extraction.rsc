@@ -25,9 +25,17 @@ public set[Method] onzeMethods(M3 m, loc c) =
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
 	
+	// relations from OFG 
+	rel[loc,loc] OFGrel = {<field, ref> | <field, ref> <- OFG::calc(true) + OFG::calc(false), isField(field), ref != |id:///|};
+	rel[loc,loc] OFGassocs 
+			= OFGrel
+			- {<field3,bla3> | 	<field2, bla2> <- OFGrel, 
+								<field3, bla3> <- OFGrel, 
+								field2 == field3, <bla3, bla2> <- m@extends};
+	
 	// associations
 	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
-		 <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
+		 <from, to> <- fieldAssociations(m) + OFGassocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
 		 
 	// dependency (can not be an association, dependency is weaker) like class A {void f(B b){b.g()}}
 	set[Relation] dependencies1 = {Relation::dependency(from, to) |
@@ -36,11 +44,6 @@ public set[Relation] onzeRelaties(M3 m) = {
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
-	
-	// relations from OFG
-	set[loc,loc] OFGrel = OFG::calc(true) + OFG::calc(false); 
-	set[loc,loc] OFGassocs = {<field, ref> | <field, ref> <- OFGrel, isField(field), ref != |id:///|};
-	
 	
 	return associations + dependencies1 + generalizations + realizations;
 };
