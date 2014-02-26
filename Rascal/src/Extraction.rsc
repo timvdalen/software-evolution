@@ -30,7 +30,7 @@ public set[Method] onzeMethods(M3 m, loc c) =
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = 
 		{Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, /*getName(m, from),*/ typ, modifierForLoc(m, from))) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)} +
-		{Relation::dependency(onzeClass(m, c), onzeClass(m, to)) | <from, to> <- fieldAssociations(m), <from, c> <- fieldWithClass(m)} +
+		{Relation::dependency(from, to) | from <- onzeClasses(m), meth <- from.functions, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)} +
 		{Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends} +
 		{Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
 
@@ -73,3 +73,12 @@ public rel[TypeSymbol, str] getAllParamSpec(M3 m, loc meth) =
 
 public rel[TypeSymbol, str] getParamSpec(M3 m, loc param) =
 		{<typ, name> | <param, typ> <- m@types, <name, param> <- m@names, isParameter(param)};
+
+		
+/**
+ * Returns the Class representing the given typesymbol.
+ * It returns the Class as a singleton set, or an empty set when typ is no system class
+ */
+public set[Class] getSystemClass(M3 m, TypeSymbol typ) = 
+	{onzeClass(m, l) | class(l, _) <- {typ}, l in classes(m)};
+	
