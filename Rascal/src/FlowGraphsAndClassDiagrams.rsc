@@ -11,12 +11,21 @@ import vis::Figure;
 import vis::Render;
  
 alias OFG = rel[loc from, loc to];
- 
+
+//rel[loc,loc] gforward = { <cl + "this", cl> | newAssign(x, cl, _, _) <- p.statemens };
+//rel[loc,loc] gbackward = {<y, cast> | assign(x, cast, y) <- p.statemens} + {<meth + "return", cast> | call(x, cast, _, meth, _) <- p.statemens}
+//rel[loc,loc] k = {};
+
+//forward propagation: {<field, bla> | <field, bla> <- prop(buildGraph(p), { <cl + "this", cl> | newAssign(x, cl, _, _) <- p.statemens }, {}, true), isField(field)}
+//backward propagation: {<field, bla> | <field, bla> <- prop(buildGraph(p), {<y, cast> | assign(x, cast, y) <- p.statemens} + {<meth + "return", cast> | call(x, cast, _, meth, _) <- p.statemens}, {}, false), isField(field)}
+
 OFG buildGraph(Program p) 
   = { <as[i], fps[i]> | newAssign(x, cl, c, as) <- p.statemens, constructor(c, fps) <- p.decls, i <- index(as) }
   + { <cl + "this", x> | newAssign(x, cl, _, _) <- p.statemens }
-  /* + ... etc */ 
-  ;
+  + {<y, x> | assign(x, _, y) <- p.statemens}
+  + {<meth + "return", x> | call(x, _, _, meth, _) <- p.statemens}
+  + {<params[i], fparams[i]> | call(_, _, _, meth, params) <- p.statemens, method(meth, fparams) <- p.decls, i <- index(params)}
+  + {<y, meth + "this"> | call(_, _, y, meth, _) <- p.statemens};
    
 OFG prop(OFG g, rel[loc,loc] gen, rel[loc,loc] kill, bool back) {
   OFG IN = { };
