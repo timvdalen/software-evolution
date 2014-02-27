@@ -25,18 +25,40 @@ public set[Method] onzeMethods(M3 m, loc c) =
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
 	
-	// relations from OFG 
-	rel[loc,loc] OFGrel = {<field, ref> | <field, ref> <- OFG::calc(true) + OFG::calc(false), isField(field), ref != |id:///|};
+	// associations from OFG 
+	rel[loc,loc] OFGassocsRel = {<field, ref> | <field, ref> <- OFG::calc(true) + OFG::calc(false), isField(field), ref != |id:///|};
 	rel[loc,loc] OFGassocs 
-			= OFGrel
-			- {<field3,bla3> | 	<field2, bla2> <- OFGrel, 
-								<field3, bla3> <- OFGrel, 
+			= OFGassocsRel
+			- {<field3,bla3> | 	<field2, bla2> <- OFGassocsRel, 
+								<field3, bla3> <- OFGassocsRel, 
 								field2 == field3, <bla3, bla2> <- m@extends};
 	
 	// associations
 	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
 		 <from, to> <- fieldAssociations(m) + OFGassocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
-		 
+	
+	// dependencies
+	set[Relation] dependencies
+			= {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <meth1, meth2> <- m@methodInvocation, <from, meth1> <- m@containment, <to, meth2> <- m@containment, isClass(from), isClass(to), from != to}
+			- {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations}
+			- {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <from, to> <- m@extends};
+	
+	// dependencies from OFG
+	rel[loc,loc] OFGdepRel = {<var, ref> | <var, ref> <- OFG::calc(true) + OFG::calc(false), isVariable(var), ref <- m@declarations<name>, ref != |id:///|};
+	rel[loc,loc] OFGdeps 
+			= OFGdepRel
+			- {<field3,bla3> | 	<field2, bla2> <- OFGdepRel, 
+								<field3, bla3> <- OFGdepRel, 
+								field2 == field3, <bla3, bla2> <- m@extends};
+								
+	// nutteloze comprehensions die nog handig kunnen zijn
+	// {<meth, ref> | <metho, ref> <- OFG::calc(true) + OFG::calc(false), meth <- m@declarations<name>, isMethod(meth), metho == meth+"this", ref != |id:///|};
+	// {<meth, ref> | <metho, ref> <- OFG::calc(true) + OFG::calc(false), meth <- m@declarations<name>, isMethod(meth), metho == meth+"return", ref != |id:///|};
+	
+	set[Relation] dependencies2
+			= {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <var, to> <- OFGdeps, <var, from> <- varWithClass(m)}
+			- {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations};
+	
 	// dependency (can not be an association, dependency is weaker) like class A {void f(B b){b.g()}}
 	set[Relation] dependencies1 = {Relation::dependency(from, to) |
 		 from <- onzeClasses(m), meth <- from.functions, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)}
@@ -45,7 +67,7 @@ public set[Relation] onzeRelaties(M3 m) = {
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
 	
-	return associations + dependencies1 + generalizations + realizations;
+	return associations + dependencies + generalizations + realizations;
 };
 
 // Helper functies
@@ -55,8 +77,11 @@ public rel[loc, TypeSymbol] fieldWithType(M3 m) =
 public rel[loc, TypeSymbol] fieldWithTypePerClass(M3 m, loc c) =
 		 {<field, typ> | <field, typ> <- m@types, isField(field), field <- fields(m,c)};
  
-public rel[loc, loc] fieldWithClass(M3 m) = 
+public rel[loc, loc] fieldWithClass(M3 m) =
 		{<field, class> | <class, field> <- m@containment, isField(field)};
+		
+public rel[loc, loc] varWithClass(M3 m) =
+		{<var, class> | <var, class> <- m@typeDependency, isVariable(var), isClass(class), class <- m@declarations<name>};
 
 public set[Modifier] modifierForLoc(M3 m, loc c) =
 		{modi | <c,modi> <- m@modifiers};
