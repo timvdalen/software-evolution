@@ -13,7 +13,7 @@
 
 %--Title---------
 \title{Software Evolution - Assignment 2 : Architecture Reconstruction}
-\author{Stef van Schuylenburg (0744314) & Jules Wulms (0747580)}
+\author{Stef van Schuylenburg (0744314) \& Jules Wulms (0747580)}
 \date{\today}
 %----------------
 
@@ -34,6 +34,51 @@
 		We apply the tool chain to a java program and we also show the Object Flow Graph used in our tool chain to created the class diagram.
 		We apply our tool chain to two version of a java program and compare the differences in the versions.
 		And finally we will hold a discussion about our tool chain.
+	
+	\section{Input and Output}
+		The general approach of our tool chain is that we take a java program as input and give a UML class diagram of this java program as output.
+		In this section we look at the input and output in more detail to indicate what our tool chain exactly accepts and what it exaclty returns.
+		
+	\subsection{Input}
+		We support the following features of the Java language:
+		\begin{itemize}
+			\item non-nested Classes: Classes are the main components of the UML Class diagram so, should have to be included to make the class diagrams.
+			\item methods: The methods show the main functionality of a class and are used to find dependencies between classes.
+			\item fields: The fields are used to create the associations and are used in the class description.
+			\item generics: Generics are used to define the structure of a class or method, so we also have to include those. %TODO: maybe more explanation here
+			\item inner classes: It is possible that classes depend on innner classes of other classes. So without the inner classes we are not able to create a complete class diagram.
+			\item visibility: Visibility is not really important, but we include it because represents the scope of functions and thus also the functionality of class.
+			\item static: Static fields and methods are not attributes of instances of a class, but can be used by all instances. So we have to show what is static, such that it is clear that all instances may depend on each other (as they use the same functions).
+			\item extends and implements relation: The extends and implements relations is used to create the generalization and realization relations of the class diagram. Those relations are very important for the architectural structure.
+			
+		
+		\end{itemize}
+		
+		We do not use the following features of the Java language:
+		\begin{itemize}
+			\item annotations: In Java annotations can be defined by any library or by the program itself, so supporting annotations would require an additional system to keep track of all the annotations. To make things not to complex, the annotations are not used in our tool chain.
+			\item a number of modifiers: A number of modifiers like synchronized, volatile, native are not used in our system.
+			We did not include those, because the modifiers are not often used and because they do not add usefull information for the architecture; most modifiers are about the implementation of the method or usage of a field.
+		\end{itemize}
+		
+	\subsection{Output}
+		The output of our tool chain is the class diagram.
+		We did include the following features of a class diagram:
+		\begin{itemize}
+			\item classes: The basic component of the class diagram, included to show what classes are part of the program.
+			\item fields and methods: Those are included to show the functionality of a class. We also decided to include the private fields and methods, because they explain the associations and dependencies.
+			\item associations, dependencies, generalization and realization: Used to show the structure of our system.
+			\item ``named associations'': Our associations are named in such a way that the name of the field is also used for the association. This makes it clears what the association represents and makes it also possible to have multiple association from one class going to the same class.
+			\item inner classes: It is possible that classes depend on innner classes of other classes. So without the inner classes we are not able to create a complete class diagram. %todo the same as for input?
+		\end{itemize}
+		
+		The following features are not included in our output:
+		\begin{itemize}
+			\item two-directional associations: We did not include those, because we prefer to use two one-directional associations. The one-directional associations do not have the problem where sometimes it is misunderstood whether the name belongs to one class or to the other. Also the associations are still clear when we only use the one-directional associations.
+			\item multiplicity: We did not include the multiplicity, because when we extract the multiplicity from a program, we can only find $0..1$ and $0..*$.
+			Only those two are found, because an association is either created from a collection ($0..*$) or a simple field($0..1$).
+			We can easy find in our diagram which is the case by looking at the type, so adding the multiplicity would not make the diagram more clear.
+		\end{itemize}
 	
 	\section{Methodology}
 		Here we will establish the structure of the analysis, so that it is clear how the results are obtained. The analysis will consist of 3 parts:
@@ -233,7 +278,7 @@
 
 	\begin{thebibliography}{9}
 		\bibitem{rascal}
-			Rascal, Centrum Wiskunde & Informatica , http://www.rascal-mpl.org/
+			Rascal, Centrum Wiskunde \& Informatica , http://www.rascal-mpl.org/
 
 		\bibitem{graphviz}
 			GraphViz, Graph visualization software, http://www.graphviz.org/
