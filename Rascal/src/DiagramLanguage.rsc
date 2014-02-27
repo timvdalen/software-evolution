@@ -26,8 +26,7 @@ data Field = field(loc id, TypeSymbol typeSymbol, set[Modifier] modifiers);
 /**
  * A method of a class (a function)
  */
-data Method = method(loc id, str name, TypeSymbol typ, rel[TypeSymbol,str] parameters, set[Modifier] modifiers);
-//data Method = method(Declaration dec, set[Modifier] modifiers);
+data Method = method(loc id, str name, TypeSymbol typ, TypeSymbol retTyp, rel[TypeSymbol,str] parameters, set[Modifier] modifiers);
 
 /**
  * The relations possible between two classes.
@@ -36,4 +35,5 @@ data Method = method(loc id, str name, TypeSymbol typ, rel[TypeSymbol,str] param
 data Relation = association(Class from, Class to, Field field)
 			  | dependency(Class from, Class to)
 			  | generalization(Class from, Class to)
-			  | realization(Class from, Class to);
+			  | realization(Class from, Class to)
+			  | inner(Class from, Class to);

@@ -22,7 +22,7 @@ public Class onzeClass(M3 m, loc c) =
 					onzeMethods(m, c));
 
 public set[Method] onzeMethods(M3 m, loc c) = 
-		{Method::method(meth, getName(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
+		{Method::method(meth, getName(m, meth), getMethodType(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
@@ -68,8 +68,10 @@ public set[Relation] onzeRelaties(M3 m) = {
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
+	set[Relation] inners = {Relation::inner(onzeClass(m, from), onzeClass(m, to)) | 
+							<from, to> <- {<inn, outer> | <outer, inn> <- m@containment, isClass(inn), isClass(outer)}};
 	
-	return associations + dependencies + generalizations + realizations;
+	return associations + dependencies + generalizations + realizations + inners;
 };
 
 // Helper functies
@@ -98,6 +100,8 @@ public rel[loc, loc] fieldDependencies(M3 m) =
 public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
 
 public TypeSymbol getClassType(M3 m, loc c) = getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
+
+public TypeSymbol getMethodType(M3 m, loc meth) = getOneFrom({typ | <meth, typ> <- m@types, isMethod(meth)});
 
 public TypeSymbol getReturn(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {
