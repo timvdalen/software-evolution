@@ -30,26 +30,35 @@ private str class2dot(Class cls) = "<classID(cls)> [
 	"}\"\n]";
 	
 private str field2dot(Field fld) = 
-	"<modifiers2dot(fld.modifiers, fieldName(fld))>: <typeName(fld.typeSymbol)>";
+	"<modifiers2dot(fld.modifiers)> <fieldName(fld)>: <typeName(fld.typeSymbol)>";
 
-private str method2dot(Method meth) =
-	 "<modifiers2dot(meth.modifiers, meth.name)>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
-
+private str method2dot(Method meth) = {
+	//generics = [typeName(typ) | typ <- meth.typ.typeParameters];
+	generics = []; // for testing
+	genericsString = isEmpty(generics)? "": "\\\<<intercalate(", ", generics)>\\\> ";
+	return "<modifiers2dot(meth.modifiers)> <genericsString>" + 
+		"<meth.name>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
+};
+	 
+/** A String for the parameters, with parameters seperated by ", " */
 private str parameters2dot(rel[TypeSymbol, str] parameters) = 
-	// replace last gets rid of extra ", " from loop
-	replaceLast("<for(<ts, name> <- parameters){><name>: <typeName(ts)>, <}>", ", ", "");
+	intercalate(", ", ["<name> :<typeName(typ)>" | <typ, name> <- parameters]);
 	
-/** Takes a set of modifiers and modifies field to show the Modifiers in UML. */
-private str modifiers2dot(set[Modifier] mods, str field) = {
+/** Generates the UML modifiers for a given list of Modifiers */
+private str modifiers2dot(set[Modifier] mods) = {
+
+	str result;
+
 	// add visibility modifier to attr
-	if (Modifier::\private() in mods) field = "- <field>";
-	else if (Modifier::\public() in mods) field = "+ <field>";
-	else if (Modifier::\protected() in mods) field = "# <field>";
+	if (Modifier::\private() in mods) result = "-";
+	else if (Modifier::\public() in mods) result = "+";
+	else if (Modifier::\protected() in mods) result = "#";
+	else result = "";
 	
 	// add static modifier to field (we use $ to indicate $tatic)
-	if (Modifier::\static() in mods) field = "$<field>";
+	if (Modifier::\static() in mods) result = "$<result>";
 	
-	return field;
+	return result;
 };
 
 private str relation2dot(Relation relation) = {
