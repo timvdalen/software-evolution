@@ -9,6 +9,7 @@ import lang::java::m3::AST;
 import lang::java::m3::TypeSymbol;
 import lang::ofg::ast::FlowLanguage;
 import String;
+import List;
 
 /**
  * Writes diagram to file in dot file format
@@ -22,10 +23,10 @@ public str diagram2dot(Diagram diagram) ="<header>
 	'<}>
 	'<footer>";
 	
-private str class2dot(Class cls) = "<className(cls)> [
+private str class2dot(Class cls) = "<classID(cls)> [
 	'  label = \"{<className(cls)>| " +
-	"<for (f <- cls.variables) {><field2dot(f)>\\l<}>|" +
-	"<for (m <- cls.functions) {><method2dot(m)>\\l<}>" +
+	"<for (f <- cls.fields) {><field2dot(f)>\\l<}>|" +
+	"<for (m <- cls.methods) {><method2dot(m)>\\l<}>" +
 	"}\"\n]";
 	
 private str field2dot(Field fld) = 
@@ -66,7 +67,7 @@ private str relation2dot(Relation relation) = {
 
 /** Generates Dot code for a simple arrow between from and to, with no attributes set */
 private str dotArrow(Class from, Class to) = 
-	"<className(from)> -\> <className(to)>";
+	"<classID(from)> -\> <classID(to)>";
 	
 private str header = "digraph G {
 	'  fontname = \"Bitstream Vera Sans\"
@@ -86,7 +87,20 @@ private str header = "digraph G {
 private str footer = "}";
     
 /** Gets the name of a class */
-private str className(Class c) = locName(c.id);
+private str className(Class c) = {
+	// getting parts that make the class name
+	name = locName(c.typeSymbol.decl);
+	generics = [typeName(typ) | typ <- c.typeSymbol.typeParameters];
+	
+	// no generics => just use name
+	if (isEmpty(generics)) return name;
+	// generics => add brackes <T, M, ...>
+	else return "<name> \\\<<intercalate(", ", generics)>\\\>";
+};
+
+/** An identifier to use in DOT to refere to the node of the class */
+private str classID(Class c) = 
+	locName(c.typeSymbol.decl);
 
 /** Gets the name of the field */
 private str fieldName(Field f) = locName(f.id);
