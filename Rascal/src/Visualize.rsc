@@ -97,7 +97,8 @@ private str typeName(TypeSymbol ts) = {
 		case class(l, _): return locName(l);
 		case interface(l, _): return locName(l);
 		case enum(l): return locName(l);
-		case array(ts2, _): return typeName(ts2);
+		case array(ts2, _): return typeName(ts2); 
+		case typeParameter(l, _): return locName(l);
 		case other: {// take the name of the object without ()
 			str string = "<other>";
 			if (/<x: .*>\(\)$/ := string) return x;
