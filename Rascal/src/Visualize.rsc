@@ -115,11 +115,21 @@ private str classID(Class c) =
 /** Gets the name of the field */
 private str fieldName(Field f) = locName(f.id);
 
+private str generics2dot(list[TypeSymbol] genlist) = {
+	// getting parts that make the generics
+	generics = [typeName(typ) | typ <- genlist];
+	
+	// no generics => print nothing
+	if (isEmpty(generics)) return "";
+	// generics => add brackes <T, M, ...>
+	else return "\\\<<intercalate(", ", generics)>\\\>";
+};
+
 /** Gets the name of the TypeSymbol */
 private str typeName(TypeSymbol ts) = {
 	switch (ts) { // switching of classes ts can be
-		case class(l, _): return locName(l);
-		case interface(l, _): return locName(l);
+		case class(l, gen): return "<locName(l)><generics2dot(gen)>";
+		case interface(l, gen): return "<locName(l)><generics2dot(gen)>";
 		case enum(l): return locName(l);
 		case array(ts2, _): return typeName(ts2); 
 		case typeParameter(l, _): return locName(l);

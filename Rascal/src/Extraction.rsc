@@ -112,7 +112,7 @@ public list[TypeSymbol] getTypeParams(M3 m, loc meth) = {
 
 public TypeSymbol getReturn(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {
-			return getOneFrom({TypeSymbol::\class(c, typ.parameters) | <meth, typ> <- m@types, <c, meth> <- m@containment, isMethod(meth), isClass(c)});
+			return getOneFrom({TypeSymbol::\class(c, []) | <c, meth> <- m@containment, isMethod(meth), isClass(c)});
 		}
 		if (meth.scheme == "java+method") {
 			return getOneFrom({typ.returnType | <meth, typ> <- m@types, isMethod(meth)});
