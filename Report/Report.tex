@@ -13,7 +13,7 @@
 
 %--Title---------
 \title{Software Evolution - Assignment 2 : Architecture Reconstruction}
-\author{Stef van Schuylenburg & Jules Wulms}
+\author{Stef van Schuylenburg (0744314) & Jules Wulms (0747580)}
 \date{\today}
 %----------------
 
@@ -22,10 +22,18 @@
 	\maketitle
 
 	\section{Introduction}
-		In this assignment we are going to analyse a given requirements document to find out how suitable it is in software evolution. To achieve this we will assess quality of individual requirements, study dependencies between them and discuss the implications of the results on the requirements evolution. \\
-		What we want to find out is what effects evolution will have on the requirements. We are going to check the individual requirements and their relation to each other to see which requirements are more suspectable to changes and how changing a requirement influences other requirements.\\
-		The requirements we are going to investigate are the user requirements of a system named VEMUS, Virtual European Music School \cite{VEMUS}. The system has to assist music teachers and students, who are unable to meet in person very often, or prefer to teach/study from their own environment. Examples of features of the system are the possibility of defining a studyplan for students to practice at home, and sending in recordings of students that can be judged by a teacher. \\
-		This report is structured as follows: In section 2 we will elaborate on the methodology used to find our results in the case study. It states how we intend to perform the analysis. Section 3 will elaborate on the system itself, and give detailed insight in the requirements. Section 4 will explain the results and observations of our analysis. Here we also discuss what the implecations are on the requirements evolution. ln section 5, we will do a step aside and critically look at our analysis and conclusions and point out how these can be invalidated. 
+		In this assignment we are going to reconstruct the architecture of a java program.
+		To show the architecture we will create a UML class diagram containing the classes, fields, methods and relations between the classes.
+		We create this diagram by first extracting the information from the java program using a program written in Rascal\cite{rascal}.
+		Then we use this information to construct the classes, the fields and methods of the classes and the relations between the classes.
+		In order to find all the relations we also use an Object Flow Graph, this graphs shows us where objects are used, and thus what class of objects are used by a class. %todo: zin loopt niet lekker
+		In the end we also visualize the UML. For the visualization we use Rascal to generate a DOT file of the class diagram, this DOT file is then read by GraphViz\cite{graphviz} to draw a pdf image containing the diagram.
+		
+		In the assignment we will look at the input and output of our tool chain. 
+		We will look at how the tool chain is created and how it should be used.
+		We apply the tool chain to a java program and we also show the Object Flow Graph used in our tool chain to created the class diagram.
+		We apply our tool chain to two version of a java program and compare the differences in the versions.
+		And finally we will hold a discussion about our tool chain.
 	
 	\section{Methodology}
 		Here we will establish the structure of the analysis, so that it is clear how the results are obtained. The analysis will consist of 3 parts:
@@ -224,16 +232,8 @@
 		When drawing conclusions about the evolution of the system, we used the fact that requirements for main features/ideas have strong intentions and are supported by more explanations in the whole requirements document. However, although the intentions are strong, this does not make them unchangable. We might have been too optimistic about how stable the requirements are, but the authors seem confident in their intentions. In the worst case, the system is not build the way they like, or it does not meet the expectations in actual usefulness in education. 
 
 	\begin{thebibliography}{9}
-		\bibitem{VEMUS}
-			VEMUS Consortium.
-			Virtual Music School User Requirements Document.
-			April, 2007.
-
-		\bibitem{keywords}
-			F. Fabbrini, M. Fusani, S. Gnesi, G. Lami. 
-			The Linguistic Approach to the Natural Language Requirements Quality: Benefits of the use of an Automatic Tool.
-			26th Annual IEEE Computer Society - NASA Goddard Space Flight Center Software Engineering Workshop,
-			Greenbelt, MA, USA 27-29 November, 2001.
+		\bibitem{rascal}
+			Rascal, Centrum Wiskunde & Informatica , http://www.rascal-mpl.org/
 
 		\bibitem{graphviz}
 			GraphViz, Graph visualization software, http://www.graphviz.org/
