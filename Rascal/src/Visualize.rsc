@@ -33,8 +33,7 @@ private str field2dot(Field fld) =
 	"<modifiers2dot(fld.modifiers)> <fieldName(fld)>: <typeName(fld.typeSymbol)>";
 
 private str method2dot(Method meth) = {
-	//generics = [typeName(typ) | typ <- meth.typ.typeParameters];
-	generics = []; // for testing
+	generics = [typeName(typ) | typ <- meth.typParams];
 	genericsString = isEmpty(generics)? "": "\\\<<intercalate(", ", generics)>\\\> ";
 	return "<modifiers2dot(meth.modifiers)> <genericsString>" + 
 		"<meth.name>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
