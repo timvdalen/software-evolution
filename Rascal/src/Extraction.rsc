@@ -14,15 +14,13 @@ public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(
 public set[Class] onzeClasses(M3 m) = 
 		{onzeClass(m,c) | c <- classes(m)};
 
-// {<blie, bla> | <blie, bla> <- m@containment, bla.scheme == "java+typeVariable"}
-
 public Class onzeClass(M3 m, loc c) = 
 		Class::class(getClassType(m, c),
 					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
 
 public set[Method] onzeMethods(M3 m, loc c) = 
-		{Method::method(meth, getName(m, meth), getMethodType(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
+		{Method::method(meth, getName(m, meth), getTypeParams(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
@@ -101,7 +99,14 @@ public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
 
 public TypeSymbol getClassType(M3 m, loc c) = getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
 
-public TypeSymbol getMethodType(M3 m, loc meth) = getOneFrom({typ | <meth, typ> <- m@types, isMethod(meth)});
+public list[TypeSymbol] getTypeParams(M3 m, loc meth) = {
+		if (meth.scheme == "java+constructor") {
+			return [];
+		}
+		if (meth.scheme == "java+method") {
+			return getOneFrom({typ.typeParameters | <meth, typ> <- m@types, isMethod(meth)});
+		}
+};
 
 public TypeSymbol getReturn(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {

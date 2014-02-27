@@ -26,7 +26,7 @@ data Field = field(loc id, TypeSymbol typeSymbol, set[Modifier] modifiers);
 /**
  * A method of a class (a function)
  */
-data Method = method(loc id, str name, TypeSymbol typ, TypeSymbol retTyp, rel[TypeSymbol,str] parameters, set[Modifier] modifiers);
+data Method = method(loc id, str name, list[TypeSymbol] typParams, TypeSymbol typ, rel[TypeSymbol,str] parameters, set[Modifier] modifiers);
 
 /**
  * The relations possible between two classes.

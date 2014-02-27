@@ -71,6 +71,8 @@ private str relation2dot(Relation relation) = {
 			return "<dotArrow(from, to)> [arrowhead = \"empty\"]";
 		case realization(from, to):
 			return "<dotArrow(from, to)> [style = \"dashed\", arrowhead = \"empty\"]";
+		case inner(from, to):
+			return "<dotArrow(from, to)> [arrowhead = \"dot\"]";
 	}
 };
 
