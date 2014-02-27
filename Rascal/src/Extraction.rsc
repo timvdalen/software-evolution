@@ -17,7 +17,7 @@ public set[Class] onzeClasses(M3 m) =
 // {<blie, bla> | <blie, bla> <- m@containment, bla.scheme == "java+typeVariable"}
 
 public Class onzeClass(M3 m, loc c) = 
-		Class::class(c, getClassType(m, c),
+		Class::class(getClassType(m, c),
 					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
 
@@ -63,7 +63,7 @@ public set[Relation] onzeRelaties(M3 m) = {
 	
 	// dependency (can not be an association, dependency is weaker) like class A {void f(B b){b.g()}}
 	set[Relation] dependencies1 = {Relation::dependency(from, to) |
-		 from <- onzeClasses(m), meth <- from.functions, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)}
+		 from <- onzeClasses(m), meth <- from.methods, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)}
 		 - {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations};
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};

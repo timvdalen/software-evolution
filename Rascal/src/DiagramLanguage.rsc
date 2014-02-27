@@ -13,9 +13,10 @@ import lang::java::m3::TypeSymbol;
 data Diagram = diagram(set[Class] classes, set[Relation] relations);
 
 /**
- * The class object in the diagram.onzeclasse
+ * The class object in the diagram.
+ * The typeSymbol is a TypeSymbol::class that holds the identifier and generics of the class
  */
-data Class = class(loc id, TypeSymbol typeSymbol, set[Field] variables, set[Method] functions);
+data Class = class(TypeSymbol typeSymbol, set[Field] fields, set[Method] methods);
 
 /**
  * A field of a class (a variable)
