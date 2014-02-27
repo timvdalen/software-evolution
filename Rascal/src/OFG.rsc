@@ -5,6 +5,8 @@ import lang::ofg::ast::FlowLanguage;
 import List;
 import Relation;
 
+Program prog = createOFG(|project://eLib|);
+
 alias OFG = rel[loc from, loc to];
 
 rel[loc,loc] genforward = { <class + "this", class> | newAssign(x, class, _, _) <- prog.statemens };
