@@ -1,6 +1,6 @@
 \documentclass[a4paper,11pt]{article}
 
-\usepackage{graphicx}
+\usepackage{graphicx, url}
 
 \newcounter{reqc}
 \setcounter{reqc}{0}
@@ -79,6 +79,34 @@
 			Only those two are found, because an association is either created from a collection ($0..*$) or a simple field($0..1$).
 			We can easy find in our diagram which is the case by looking at the type, so adding the multiplicity would not make the diagram more clear.
 		\end{itemize}
+		
+	\section{The Tool Chain}
+	For our tool chain we use two different programs to execute it: We use Rascal and GraphViz.
+	The main part of our tool chain is our program written in Rascal.
+	
+	We have divided our program in 3 components: \emph{Extraction, OFG} and \emph{Visualize}, those components are Rascal modules and Extraction and Visualize can be used in isolation. 
+	Besides those components we also have two other modules: \emph{DiagramLanguage} and \emph{Main}.
+	DiagramLanguage defines the datatypes that is used to transfer the diagram from Extraction to Visualize and Main is used to execute everything.
+	
+	The Extraction module has functions to extract a diagram (as defined by the DiagramLanguage) from a Java project. The module depends on the OFG module.
+	The Extraction module uses the Java-extraction libraries from Rascal (found in the modules \texttt{\url{lang::java::jdt::m3::AST}} and \texttt{\url{lang::java::jdt::m3::Core}} to extract the classes, fields, methods and a number of relations from the java program and to construct the Diagram with it.
+	It also uses the OFG module to find associations that can not be found using standard extraction of the java program.
+	The main method that is used to generate the Diagram using the Extraction module is called \texttt{onsDiagram(M3 m)}.
+	
+	The OFG module is a module to create an Object Flow Graph and to get the relations from this Object Flow Graph which represent the association found using the Object Flow Graph.
+	The Object Flow Graph uses the \emph{Rascal-OFG}\cite{rascal-ofg} to create the Object Flow Graph.
+	After creating the Object Flow Graph the module uses this graph to create the associations which are used by the Extraction module.
+	The main method, which is used to find the associations can be found at \texttt{cacl(bool forward)}.
+	
+	The Visualize module creates a string formatted in the DOT language which is used to render the diagram.
+	This module takes a diagram as input and uses code generation to create a DOT file.
+	The DOT file is intended to be used by GraphViz to create an image describing the diagram as a UML Class Diagram.
+	The main method, which takes a diagram and creates the DOT file for it is called \texttt{diagram2dot(Diagram diagram)}.
+	
+	We decided to use those components and to decouple Extract and Visualize, such that we can easily use a different kind of visualization or a different kind of extraction.
+	It also allows us to work seperated on those components and to rarely have to change one component because the other has changed.
+	It also made testing easier. For example we did not had to create the diagram object (which can take quite some time) in order to test the Visualize module.
+	
 	
 	\section{Methodology}
 		Here we will establish the structure of the analysis, so that it is clear how the results are obtained. The analysis will consist of 3 parts:
@@ -282,6 +310,9 @@
 
 		\bibitem{graphviz}
 			GraphViz, Graph visualization software, http://www.graphviz.org/
+			
+		\bibitem{rascal-ofg}
+			Rascal OFG, Davy Landman, https://github.com/cwi-swat/rascal-OFG
 
 	\end{thebibliography}
 
