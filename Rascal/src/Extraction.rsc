@@ -33,9 +33,11 @@ public set[Relation] onzeRelaties(M3 m) = {
 								<field3, bla3> <- OFGassocsRel, 
 								field2 == field3, <bla3, bla2> <- m@extends};
 	
+	rel[loc,loc] selfAssocs = {<from, to> | <to, from> <- m@containment, isField(from), isClass(to)};
+	
 	// associations
 	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
-		 <from, to> <- fieldAssociations(m) + OFGassocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
+		 <from, to> <- fieldAssociations(m) + OFGassocs - selfAssocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
 	
 	// dependencies
 	set[Relation] dependencies
