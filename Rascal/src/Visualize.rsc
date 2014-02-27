@@ -33,8 +33,7 @@ private str field2dot(Field fld) =
 	"<modifiers2dot(fld.modifiers)> <fieldName(fld)>: <typeName(fld.typeSymbol)>";
 
 private str method2dot(Method meth) = {
-	//generics = [typeName(typ) | typ <- meth.typ.typeParameters];
-	generics = []; // for testing
+	generics = [typeName(typ) | typ <- meth.typParams];
 	genericsString = isEmpty(generics)? "": "\\\<<intercalate(", ", generics)>\\\> ";
 	return "<modifiers2dot(meth.modifiers)> <genericsString>" + 
 		"<meth.name>(<parameters2dot(meth.parameters)>): <typeName(meth.typ)>";
@@ -71,6 +70,8 @@ private str relation2dot(Relation relation) = {
 			return "<dotArrow(from, to)> [arrowhead = \"empty\"]";
 		case realization(from, to):
 			return "<dotArrow(from, to)> [style = \"dashed\", arrowhead = \"empty\"]";
+		case inner(from, to):
+			return "<dotArrow(from, to)> [arrowhead = \"dot\"]";
 	}
 };
 
@@ -114,11 +115,21 @@ private str classID(Class c) =
 /** Gets the name of the field */
 private str fieldName(Field f) = locName(f.id);
 
+private str generics2dot(list[TypeSymbol] genlist) = {
+	// getting parts that make the generics
+	generics = [typeName(typ) | typ <- genlist];
+	
+	// no generics => print nothing
+	if (isEmpty(generics)) return "";
+	// generics => add brackes <T, M, ...>
+	else return "\\\<<intercalate(", ", generics)>\\\>";
+};
+
 /** Gets the name of the TypeSymbol */
 private str typeName(TypeSymbol ts) = {
 	switch (ts) { // switching of classes ts can be
-		case class(l, _): return locName(l);
-		case interface(l, _): return locName(l);
+		case class(l, gen): return "<locName(l)><generics2dot(gen)>";
+		case interface(l, gen): return "<locName(l)><generics2dot(gen)>";
 		case enum(l): return locName(l);
 		case array(ts2, _): return typeName(ts2); 
 		case typeParameter(l, _): return locName(l);

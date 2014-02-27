@@ -14,15 +14,13 @@ public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(
 public set[Class] onzeClasses(M3 m) = 
 		{onzeClass(m,c) | c <- classes(m)};
 
-// {<blie, bla> | <blie, bla> <- m@containment, bla.scheme == "java+typeVariable"}
-
 public Class onzeClass(M3 m, loc c) = 
 		Class::class(getClassType(m, c),
 					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
 
 public set[Method] onzeMethods(M3 m, loc c) = 
-		{Method::method(meth, getName(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
+		{Method::method(meth, getName(m, meth), getTypeParams(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
 public set[Relation] onzeRelaties(M3 m) = {
@@ -35,9 +33,11 @@ public set[Relation] onzeRelaties(M3 m) = {
 								<field3, bla3> <- OFGassocsRel, 
 								field2 == field3, <bla3, bla2> <- m@extends};
 	
+	rel[loc,loc] selfAssocs = {<from, to> | <to, from> <- m@containment, isField(from), isClass(to)};
+	
 	// associations
 	set[Relation] associations = {Relation::association(onzeClass(m, c), onzeClass(m, to), Field::field(from, typ, modifierForLoc(m, from))) |
-		 <from, to> <- fieldAssociations(m) + OFGassocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
+		 <from, to> <- fieldAssociations(m) + OFGassocs - selfAssocs, <from, c> <- fieldWithClass(m), <from, typ> <- fieldWithType(m)};
 	
 	// dependencies
 	set[Relation] dependencies
@@ -68,8 +68,10 @@ public set[Relation] onzeRelaties(M3 m) = {
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
+	set[Relation] inners = {Relation::inner(onzeClass(m, from), onzeClass(m, to)) | 
+							<from, to> <- {<inn, outer> | <outer, inn> <- m@containment, isClass(inn), isClass(outer)}};
 	
-	return associations + dependencies + generalizations + realizations;
+	return associations + dependencies + generalizations + realizations + inners;
 };
 
 // Helper functies
@@ -99,9 +101,18 @@ public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
 
 public TypeSymbol getClassType(M3 m, loc c) = getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
 
+public list[TypeSymbol] getTypeParams(M3 m, loc meth) = {
+		if (meth.scheme == "java+constructor") {
+			return [];
+		}
+		if (meth.scheme == "java+method") {
+			return getOneFrom({typ.typeParameters | <meth, typ> <- m@types, isMethod(meth)});
+		}
+};
+
 public TypeSymbol getReturn(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {
-			return getOneFrom({TypeSymbol::\class(c, typ.parameters) | <meth, typ> <- m@types, <c, meth> <- m@containment, isMethod(meth), isClass(c)});
+			return getOneFrom({TypeSymbol::\class(c, []) | <c, meth> <- m@containment, isMethod(meth), isClass(c)});
 		}
 		if (meth.scheme == "java+method") {
 			return getOneFrom({typ.returnType | <meth, typ> <- m@types, isMethod(meth)});
