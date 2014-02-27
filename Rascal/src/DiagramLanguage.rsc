@@ -15,7 +15,7 @@ data Diagram = diagram(set[Class] classes, set[Relation] relations);
 /**
  * The class object in the diagram.onzeclasse
  */
-data Class = class(loc id, set[Field] variables, set[Method] functions);
+data Class = class(loc id, TypeSymbol typeSymbol, set[Field] variables, set[Method] functions);
 
 /**
  * A field of a class (a variable)

@@ -14,8 +14,10 @@ public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(
 public set[Class] onzeClasses(M3 m) = 
 		{onzeClass(m,c) | c <- classes(m)};
 
+// {<blie, bla> | <blie, bla> <- m@containment, bla.scheme == "java+typeVariable"}
+
 public Class onzeClass(M3 m, loc c) = 
-		Class::class(c,
+		Class::class(c, getClassType(m, c),
 					{Field::field(f, typ, modifierForLoc(m, f)) | <f, typ> <- fieldWithTypePerClass(m,c)},
 					onzeMethods(m, c));
 
@@ -94,6 +96,8 @@ public rel[loc, loc] fieldDependencies(M3 m) =
 		{<param, class> | <param, class> <- m@typeDependency, isParameter(param), isClass(class), class <- m@declarations<name>};
 
 public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
+
+public TypeSymbol getClassType(M3 m, loc c) = getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
 
 public TypeSymbol getReturn(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {
