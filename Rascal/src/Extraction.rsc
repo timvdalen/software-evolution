@@ -58,7 +58,7 @@ public rel[loc, TypeSymbol] fieldWithTypePerClass(M3 m, loc c) =
 		 {<field, typ> | <field, typ> <- m@types, isField(field), field <- fields(m,c)};
  
 public rel[loc, loc] fieldWithClass(M3 m) =
-		{<field, class> | <class, field> <- m@containment, isField(field)};
+		{<field, class> | <class, field> <- m@containment, isField(field), class <- m@declarations<name>};
 		
 public rel[loc, loc] varWithClass(M3 m) =
 		{<var, class> | <var, class> <- m@typeDependency, isVariable(var), isClass(class), class <- m@declarations<name>};
@@ -75,7 +75,13 @@ public rel[loc, loc] fieldDependencies(M3 m) =
 
 public str getName(M3 m, loc l) = getOneFrom({name | <name, l> <- m@names});
 
-public TypeSymbol getClassType(M3 m, loc c) = getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
+public TypeSymbol getClassType(M3 m, loc c) = {
+		if(isEmpty({typ | <c, typ> <- m@types, isClass(c)})) {
+			return TypeSymbol::\class(c, []);
+		} else {
+			return getOneFrom({typ | <c, typ> <- m@types, isClass(c)});
+		}
+};
 
 public list[TypeSymbol] getTypeParams(M3 m, loc meth) = {
 		if (meth.scheme == "java+constructor") {
