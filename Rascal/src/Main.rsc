@@ -35,3 +35,13 @@ public void runELib() = {
 	
 	run(project, file);
 };
+
+public void runOFG(loc project) = {
+	loc file = |home:///software_evolution_ofg|;
+	Program prog = createOFG(project);
+	str dot = OFG2dot(prog);
+	
+	// saving the file
+	writeFile(file, dot);
+	println("Output written to <file>");
+};

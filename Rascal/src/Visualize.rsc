@@ -5,6 +5,7 @@ module Visualize
  */
 
 import DiagramLanguage;
+import OFG;
 import lang::java::m3::AST;
 import lang::java::m3::TypeSymbol;
 import lang::ofg::ast::FlowLanguage;
@@ -138,10 +139,18 @@ private str typeName(TypeSymbol ts) = {
 	};
 };
 
-// TODO: nodig voor methods maar moet verbeterd
 private str param(Decl d) = "<d.\type>: <d.name>";
 
 str locName(loc l) = {
 	if (/<x: [^\/]*>$/ := l.path) x;
 	else "unknown";
 };
+
+/**
+ * Writes OFG in dot file format
+ */
+public str OFG2dot(Program prog) ="<header>
+	'<for (<from, to> <- {<a, b> | <a, b> <- OFG::buildGraph(prog), a!= |id:///|, b != |id:///|}) {>
+	'  \"<from.path>\" -\> \"<to.path>\" 
+	'<}>
+	'<footer>";
