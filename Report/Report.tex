@@ -109,6 +109,10 @@
 	It also allows us to work seperated on those components and to rarely have to change one component because the other has changed.
 	It also made testing easier. For example we did not had to create the diagram object (which can take quite some time) in order to test the Visualize module.
 	
+	Instead of using this style where another module (the Main module) uses the components to pass the return value of one
+	to the other (like the pipe and filters style) we could also let Visualize depend on Extraction or vice versa.
+	We decide to not do this, because this makes it easier to replace one of the components by something else.
+	
 	\subsection{GraphViz}
 	
 	To create an image of the diagram we use GraphViz.
