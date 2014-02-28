@@ -1,19 +1,16 @@
 module OFG
 
-import lang::ofg::ast::Java2OFG;
 import lang::ofg::ast::FlowLanguage;
 import List;
 import Relation;
 
-Program prog = createOFG(|project://eLib|);
-
 alias OFG = rel[loc from, loc to];
 
-rel[loc,loc] genforward = { <class + "this", class> | newAssign(x, class, _, _) <- prog.statemens };
-rel[loc,loc] genbackward
+rel[loc,loc] genforward(Program prog) = { <class + "this", class> | newAssign(x, class, _, _) <- prog.statemens };
+rel[loc,loc] genbackward(Program prog)
 		= {<y, cast> | assign(x, cast, y) <- prog.statemens}
 		+ {<meth + "return", cast> | call(x, cast, _, meth, _) <- prog.statemens};
-rel[loc,loc] kill = {};
+rel[loc,loc] kill(Program prog) = {};
 
 OFG buildGraph(Program p) 
 	// return value of the constructor (x = cons(...))
@@ -44,10 +41,10 @@ OFG prop(OFG g, rel[loc,loc] gen, rel[loc,loc] kill, bool back) {
   return OUT;
 }
 
-OFG calc(bool forward) {
+OFG calc(Program prog, bool forward) {
 	if(forward) {
-		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genforward, kill, true)};
+		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genforward(prog), kill(prog), true)};
 	} else {
-		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genbackward, kill, false)};
+		return {<field, bla> | <field, bla> <- prop(buildGraph(prog), genbackward(prog), kill(prog), false)};
 	}
 }

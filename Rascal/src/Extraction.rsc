@@ -3,12 +3,13 @@ module Extraction
 import IO;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
+import lang::ofg::ast::FlowLanguage;
 import DiagramLanguage;
 import OFG;
 import Set;
 
 // Informatie over heel programma
-public Diagram onsDiagram(M3 m) = Diagram::diagram(onzeClasses(m), onzeRelaties(m));
+public Diagram onsDiagram(M3 m, Program prog) = Diagram::diagram(onzeClasses(m), onzeRelaties(m, prog));
 
 // Static informatie uit classes
 public set[Class] onzeClasses(M3 m) = 
@@ -23,15 +24,11 @@ public set[Method] onzeMethods(M3 m, loc c) =
 		{Method::method(meth, getName(m, meth), getTypeParams(m, meth), getReturn(m, meth), getAllParamSpec(m, meth), modifierForLoc(m, meth)) | meth <- methods(m,c)};
 
 // Informatie over relaties tussen classes
-public set[Relation] onzeRelaties(M3 m) = {
+public set[Relation] onzeRelaties(M3 m, Program prog) = {
 	
 	// associations from OFG 
-	rel[loc,loc] OFGassocsRel = {<field, ref> | <field, ref> <- OFG::calc(true) + OFG::calc(false), isField(field), ref != |id:///|};
-	rel[loc,loc] OFGassocs 
-			= OFGassocsRel
-			- {<field3,bla3> | 	<field2, bla2> <- OFGassocsRel, 
-								<field3, bla3> <- OFGassocsRel, 
-								field2 == field3, <bla3, bla2> <- m@extends};
+	rel[loc,loc] OFGassocsRel = {<field, ref> | <field, ref> <- OFG::calc(prog, true) + OFG::calc(prog, false), isField(field), ref != |id:///|};
+	rel[loc,loc] OFGassocs = OFGassocsRel - {<field2,class3> | <class3, class2> <- m@extends, <field2, class2> <- OFGassocsRel};
 	
 	rel[loc,loc] selfAssocs = {<from, to> | <to, from> <- m@containment, isField(from), isClass(to)};
 	
@@ -41,30 +38,9 @@ public set[Relation] onzeRelaties(M3 m) = {
 	
 	// dependencies
 	set[Relation] dependencies
-			= {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <meth1, meth2> <- m@methodInvocation, <from, meth1> <- m@containment, <to, meth2> <- m@containment, isClass(from), isClass(to), from != to}
+			= {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <meth1, meth2> <- m@methodInvocation, isMethod(meth1), isMethod(meth2), <from, meth1> <- m@containment, <to, meth2> <- m@containment, isClass(from), isClass(to), from != to}
 			- {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations}
 			- {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <from, to> <- m@extends};
-	
-	// dependencies from OFG
-	rel[loc,loc] OFGdepRel = {<var, ref> | <var, ref> <- OFG::calc(true) + OFG::calc(false), isVariable(var), ref <- m@declarations<name>, ref != |id:///|};
-	rel[loc,loc] OFGdeps 
-			= OFGdepRel
-			- {<field3,bla3> | 	<field2, bla2> <- OFGdepRel, 
-								<field3, bla3> <- OFGdepRel, 
-								field2 == field3, <bla3, bla2> <- m@extends};
-								
-	// nutteloze comprehensions die nog handig kunnen zijn
-	// {<meth, ref> | <metho, ref> <- OFG::calc(true) + OFG::calc(false), meth <- m@declarations<name>, isMethod(meth), metho == meth+"this", ref != |id:///|};
-	// {<meth, ref> | <metho, ref> <- OFG::calc(true) + OFG::calc(false), meth <- m@declarations<name>, isMethod(meth), metho == meth+"return", ref != |id:///|};
-	
-	set[Relation] dependencies2
-			= {Relation::dependency(onzeClass(m, from), onzeClass(m, to)) | <var, to> <- OFGdeps, <var, from> <- varWithClass(m)}
-			- {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations};
-	
-	// dependency (can not be an association, dependency is weaker) like class A {void f(B b){b.g()}}
-	set[Relation] dependencies1 = {Relation::dependency(from, to) |
-		 from <- onzeClasses(m), meth <- from.methods, <typ, _> <- meth.parameters, to <- getSystemClass(m, typ)}
-		 - {Relation::dependency(from, to) | Relation::association(from, to, _) <- associations};
 		 
 	set[Relation] generalizations = {Relation::generalization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@extends};
 	set[Relation] realizations = {Relation::realization(onzeClass(m, relat.from), onzeClass(m, relat.to)) | relat <- m@implements};
