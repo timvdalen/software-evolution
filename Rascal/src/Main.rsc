@@ -31,7 +31,7 @@ public void run(loc project, loc file) {
  */
 public void runELib() = {
 	loc project = |project://eLib|;
-	loc file = |home:///software_evolution|;
+	loc file = |home:///software_evolution_eLib.dot|;
 	
 	run(project, file);
 };

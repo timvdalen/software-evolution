@@ -122,7 +122,7 @@
 	\subsection{Usage of the Tool Chain}
 	To use the Tool Chain we have created a Main module.
 	This Main module contains a function called \texttt{run(loc project, loc file)}.
-	Wich creates DOT output for the eclipse program specified in \texttt{project}.
+	Which creates DOT output for the eclipse program specified in \texttt{project}.
 	(\texttt{project} is a Rascal location, so if you want to use for example the eclipse program eLib, then
 	\texttt{project} would be \texttt{|project:///eLib|}.)
 	After calling the run function DOT output for the diagram will be saved in \texttt{file}.
@@ -134,201 +134,33 @@
 	
 	
 	
-	\section{Methodology}
-		Here we will establish the structure of the analysis, so that it is clear how the results are obtained. The analysis will consist of 3 parts:
-		\begin{itemize}
-			\item We start the analysis with inspecting the textual representation of the requirements, using a keyword-based approach. Here the quality of the requirements is assessed by looking for keywords that point at \textit{subjectivity}, \textit{optionality}, \textit{vagueness}, \textit{underspecification} or \textit{multiplicity}. In \cite{keywords}, these features are indicators of specific quality properties. For our own assessment, we choose keywords from different quality properties, to cover bigger amount of quality properties. For non-ambiguity we look for \textit{vagueness}, \textit{underspecification} will cover specification completion, as a quality property, and understandability can be checked by looking for \textit{multiplicity} in the specification. \\
-			First we will go through the requirements, only using a list of keywords in \cite{keywords}. After this first analysis, the results will be extended with a manual assessment of the requirements, looking for more keywords that indicate \textit{vagueness}, \textit{underspecification} and \textit{multiplicity}. Since the manual assessment is more susceptible to subjectivity from the analist, we will give arguments for new keywords.
-			\item In the second part of the analysis, dependencies between the requirements are retrieved. Since the requirements are just plain text, and not formalised, we will not use formal techniques but try to find the dependencies manually. In this process we take 4 types of dependencies into account, namely \textit{use}, \textit{generalization/refinement}, \textit{temporal} and \textit{satisfiability}. After going through all the requirements, more dependencies can be obtained by transitivity. However, we have to take into account that for dependencies of different types, transitivity might not always hold. The cases where transivity is usable will be supported by arguments of why it is applicable.
-			\item When the dependencies are extracted from the requirements, we can create a dependency graph to give an overview of how the requirements as a whole are related to each other. The visualization in a graph, can give us more insight to draw conclusions towards the evolution of the requirements. For the visualisation we will use GraphViz \cite{graphviz}, a general graph visualization toolkit. The graph will have nodes for each of the requirements and directed edges which indicate the depencency between the requirements. The edges will not have a label which indicates the type of the dependency, since the graph will probably be really big (having 60 nodes), and extra labels will only lead to a more complex graph. The dependency type can always be found in the specification of the dependencies, done in the step before.
-			\item The last step in the process is to combine all the earlier results to find out what effects software evolution will have on the requirements. We will start by looking at the dependency graph and find important requirements to evaluate in more detail. For these requirements we will look at the quality and try to find out how volatile they are compared to other (depending) requirements.
-		\end{itemize} 
+	\section{Application of Tool Chain}
 		
-		These are the steps we will take in the process of analysing the requirements. Next we will introduce the system, we are going to analyse.
+		\subsection{eLib}
+			
+			
+		\subsection{Case study: CyberNeko HTML Parser}
+			
 	
-	\section{Case study}
-	\label{sec:case}
-		This section gives an overview of the system described in \cite{VEMUS}. The system supports teachers and students to teach and study music while not residing in the same room or even the same city. The system has several features, such as offering a way for teachers to manage the studying of their students, students can send in performances to be graded by teachers or the system and students can arrange a performance together in a virtual classroom. \\
-		We have divided the requirements for this system into subsections, each subsection containing the requirements for one distinct part of the system. Some requirements in \cite{VEMUS} are given as a small list. For these requirements consisting of subrequirements, the requirement in our analysis will be the conjunction of the list of subrequirements. \\
+	\section{Discussion of Tool Chain}
 	
-	\section{Results}
-		The results of our analysis will be presented per step of the process. We will start with the results of the requirements analysis and argue how the quality of the requirements is overall. Then we elaborate on the dependencies between the different requirements and put these dependencies in a graph. We end the section with an analysis of the quality and the dependency graph of the requirements, and conclude what the implications are for the evolution of the requirements. \\
+	
+	\section{Conclusions}
+		
 		\subsection{Requirement quality}
-			We started the assessment of the quality of the requirements by scanning through the requirements and looking for certain words from the word list in \cite{keywords}. Table \ref{table:keywords} gives an overview of this assessment. \\
-			In this first assessment using the keywords, we also looked at the way the words are used. An example of this is that "adequate" in requirement 36 is an indicator of vagueness, while "similar" in requirement 34 is not, as it is later specified in the requirement. \\
-			\begin{table}[h!]
-				\begin{tabular}{l | l | l || l | l | l}
-					Feature & Requirement & Keyword & Feature & Requirement & Keyword \\ \hline
-					Vagueness & 36 & adequate & Multiplicity & 32 & and \\
-					Vagueness & 48 & bad & Multiplicity & 33 & and \\
-					Underspecification & 5 & access & Multiplicity & 34 & and \\
-					Underspecification & 20 & access & Multiplicity & 35 & and \\
-					Multiplicity & 1 & and & Multiplicity & 36 & and \\
-					Multiplicity & 4 & or & Multiplicity & 42 & and \\
-					Multiplicity & 5 & and & Multiplicity & 46 & and \\
-					Multiplicity & 6 & or & Multiplicity & 47 & or \\
-					Multiplicity & 16 & and & Multiplicity & 51 & and \\
-					Multiplicity & 17 & and & Multiplicity & 53 & and \\
-					Multiplicity & 20 & and & Multiplicity & 54 & and \\
-					Multiplicity & 25 & and & Multiplicity & 55 & or \\
-					Multiplicity & 27 & and & Multiplicity & 56 & and \\
-					Multiplicity & 29 & and & Multiplicity & 57 & and \\
-					Multiplicity & 30 & and & Multiplicity & 58 & and \\
-					Multiplicity & 31 & and & Multiplicity & 59 & and \\
-				\end{tabular}
-				\caption{Results of keyword assessment using word list in \cite{keywords}}
-				\label{table:keywords}
-			\end{table}
 			
-			During the second assessment we looked for new indicators of \textit{vagueness}, \textit{underspecification} and \textit{multiplicity} in the same set of requirements. For each of the new keywords, we also give arguments why it is an indicator of this type. The results can be found in Table \ref{table:keywords2}. \\
-			
-			\begin{table}[h!]
-				\begin{tabular}{l | l | l | p{7cm}}
-					Feature & Req. & Keyword & Explanation \\ \hline
-					Vagueness & 14 & small & What is a small number of errors? \\
-					Vagueness & 15 & plausible & What are plausible causes? \\
-					Vagueness & 17 & large & When is a number of mistakes large? \\
-					Vagueness & 20 & great & How big is a great need? \\
-					Vagueness & 21 & great & How many teachers are lacking? \\
-					Vagueness & 25 & easily & When is creating resources easy? \\
-					Vagueness & 26 & regularly & When are content updates regularly \\
-					Vagueness & 40 & simple & What makes a visualization simple? \\
-					Vagueness & 40 & intuitive & When is a visualization intuitive? \\
-					Vagueness & 41 & general & What is general in terms of feedback? \\
-					Vagueness & 41 & detailed & When is feedback detailed? \\
-					Vagueness & 44 & comprehensive & What makes a graph comprehensive? \\
-					Vagueness & 53 & flexibly & How is content chosen flexibly? \\
-					Vagueness & 56 & logical & What is a logical order in this case? \\
-					Vagueness & 58 & regularly & When are content updates regularly? \\
-					Underspec. & 36 & parameters & Which parameters should be activated? \\
-					Underspec. & 39 & graded & How are the difficulties graded? \\
-					Underspec. & 43 & representation & What kind of representation? Graphical/textual? \\
-					Multiplicity & 5 & additionally & Additionally adds another feature, namely audio annotations \\
-					Multiplicity & 40 & (implicite) and & simple (and) intuitive (and) not using many colors \\
-					Multiplicity & 55 & as well as & as well as couples 2 requirements together \\
-				\end{tabular}
-				\caption{Results of keyword assessment, with argumentation for new keywords}
-				\label{table:keywords2}
-			\end{table}
-
-			From the first assessment we can conclude that the requirements are often guilty of multiplicity. Many requirements try to combine different aspects or different cases into one bigger composed requirement, instead of specifying smaller, more elementary requirements. Since "and" is the strongest indicator of multiplicity, we do not find many new cases of multiplicity in the second assessment. \\
-			The second assessment found mainly new indicators of vagueness. This is the case because some requirements are actually made more specific in the rest of the document. An example of this is the attributes "simple" and "intuitive" when talking about the VEMUS visualizations. However, the requirements document has a lot of figures and explanations of what they mean by "simple" or "intuitive", but it is not mentioned in the actual requirements. Therefore the requirements, when looked at textually, can be vague. \\
-			Further analysis of the quality of the requirements will be done together with the dependencies. With both the quality assessment and the dependency graph finished, we can start drawing conclusions about the evolution of requirements. \\
 
 		\subsection{Dependencies}
-			Dependencies between the requirements are extracted from the textual requirements. This is a manual process and therefore we give a clear explanation for each of the dependencies we have come up with. Table \ref{table:dep1}, \ref{table:dep2} and \ref{table:dep3} gives an overview of the dependencies and arguments for having them.
-			\begin{table}[h!]
-				\begin{tabular}{l | l | p{10cm}}
-					Dependency & Type & Explanation \\ \hline
-					3 $\rightarrow$ 1 & Satisfiability & Feedback in 3 should be according to student approach in 1 \\
-					3 $\rightarrow$ 2 & Temporal & Feedback in 3 cannot be given during performance according to 2 \\
-					3 $\rightarrow$ 11 & Satisfiability & Feedback in 3 should be consistent with real teacher according to 11 \\
-					4 $\rightarrow$ 1 & Satisfiability & Annotations in 4 should be according to student approach in 1 \\
-					5 $\rightarrow$ 1 & Satisfiability & Icons in annotations in 5 should be according to student approach in 1 \\
-					5 $\rightarrow$ 4 & Satisfiability & Icons in annotations in 5 can only be used if there are annotations in 4 \\
-					5 $\rightarrow$ 40 & Satisfiability & Icons in 5 are a simple and intuitive visualization in 40 \\
-					5 $\rightarrow$ 42 & Satisfiability & Icons in 5 have a musical meaning like in 42 \\
-					7 $\rightarrow$ 6 & Satisfiability & Starting accompaniment in 7 complies with 6, stating accompaniment is important \\
-					8 $\rightarrow$ 6 & Satisfiability & Tempo in accompaniment is important in 8, complies with 6 \\
-					9 $\rightarrow$ 6 & Satisfiability & "Play after me" (accompaniment with recorded tune), complies with 6 \\
-					10 $\rightarrow$ 1 & Satisfiability & Performance evaluation in 10 should be according to student approach in 1 \\
-					11 $\rightarrow$ 1 & Satisfiability & Feedback consistent with teacher in 11 should be according to approach in 1 \\
-					11 $\rightarrow$ 10 & Satisfiability & Feedback consistent with teacher in 11 complies with evaluation in 10 \\
-					12 $\rightarrow$ 11 & Satisfiability & More forgiving feedback in 12 should be consistent with teacher feedback in 11 \\
-					16 $\rightarrow$ 3 & Satisfiability & Incomplete performances in 16 are similar to unfinished performance in 3 \\
-					16 $\rightarrow$ 10 & Satisfiability & Feedback on incomplete performance in 16 should comply with evaluation in 10 \\
-					17 $\rightarrow$ 10 & Satisfiability & Feedback for many mistakes in 17 should comply with evaluation in 10 \\
-					17 $\rightarrow$ 15 & Satisfiability & Feedback for many mistakes in 17 should comply with causes for mistakes in 15 \\
-					17 $\rightarrow$ 16 & Satisfiability & Feedback for many mistakes in 17 should work on incomplete performance in 16 \\
-					18 $\rightarrow$ 4 & Satisfiability & IMUTUS concepts for displaying results in 18 should comply with annotations in 4 \\
-					19 $\rightarrow$ 15 & Satisfiability & Hints given in 19 should comply with causes for mistakes in 15 \\
-				\end{tabular}
-				\caption{Dependencies extracted from the requirements in \cite{VEMUS} (Part 1)}
-				\label{table:dep1}
-			\end{table}
-			\begin{table}[h!]
-				\begin{tabular}{l | l | p{10cm}}
-					Dependency & Type & Explanation \\ \hline
-					21 $\rightarrow$ 20 & Satisfiability & Solving the lack of teachers in 21 will give more access to music resources in 20 \\
-					23 $\rightarrow$ 22 & Satisfiability & Automatic evaluation in 23 is part of support for self guided learning in 22. \\
-					24 $\rightarrow$ 22 & Satisfiability & On-line support in 24 is part of support for self guided learning in 22. \\
-					25 $\rightarrow$ 22 & Satisfiability & Creation of learning resources in 25 is part of support in 22 \\
-					25 $\rightarrow$ 53 & Satisfiability & Creation of learning resources in 25 is part of choosing content flexibly in 53 \\
-					27 $\rightarrow$ 22 & Satisfiability & Content repository in 27 is part of self guided learning support in 22 \\
-					28 $\rightarrow$ 22 & Satisfiability & Teacher choosing the studying procedure in 28 is part of support in 22 \\
-					29 $\rightarrow$ 22 & Satisfiability & Intervening in self learning is part of self guided learning support in 22 \\
-					30 $\rightarrow$ 1 & Satisfiability & Lesson plan has evaluation in 30 and should comply to approach in 1 \\
-					30 $\rightarrow$ 10 & Satisfiability & Lesson plan has evaluation in 30 which is a VEMUS evaluation like in 10 \\
-					30 $\rightarrow$ 11 & Satisfiability & Lesson plan has evaluation in 30 which should be consistent with teacher in 11 \\
-					31 $\rightarrow$ 28 & Satisfiability & Mark parts of score by teacher in 31 is part of teacher choosing procedure in 28 \\
-					32 $\rightarrow$ 28 & Satisfiability & Identify difficulties by teacher in 32 is part of teacher choosing procedure in 28 \\
-					33 $\rightarrow$ 1 & Satisfiability & Evaluation per step in 33 should be according to approach in 1 \\
-					33 $\rightarrow$ 2 & Satisfiability & Evaluation per step in 33 should not be given during performance in 2 \\
-					33 $\rightarrow$ 3 & Satisfiability & Evaluation per step in 33 should work on unfinished performances in 3 \\
-					33 $\rightarrow$ 16 & Satisfiability & Evaluation per step in 33 should work on incomplete performances in 2 \\
-					34 $\rightarrow$ 28 & Satisfiability & Teacher designing practice plan in 34 is part of teacher choosing procedure in 28 \\
-					34 $\rightarrow$ 33 & Satisfiability & Teacher practice plan in 34 complies with a student practicing in steps in 33 \\
-					35 $\rightarrow$ 10 & Satisfiability & Recording performances in 35 should get evaluated like in 10 \\
-					36 $\rightarrow$ 10 & Satisfiability & Full evaluation in 36 should be done like in 10 \\
-					37 $\rightarrow$ 33 & Satisfiability & Joining parts in 37 requires division in parts in 33 \\
-				\end{tabular}
-				\caption{Dependencies extracted from the requirements in \cite{VEMUS} (Part 2)}
-				\label{table:dep2}
-			\end{table}
-			\begin{table}[h!]
-				\begin{tabular}{l | l | p{10cm}}
-					Dependency & Type & Explanation \\ \hline
-					39 $\rightarrow$ 38 & Satisfiability & Tuning up exercises in 39 requires possibility to tune single note in 38 \\
-					41 $\rightarrow$ 14 & Satisfiability & General feedback, not detailed, in 41 complies with small number of errors in 14 \\
-					41 $\rightarrow$ 40 & Satisfiability & General feedback visualisation in 41 should be simple like in 40 \\
-					42 $\rightarrow$ 40 & Satisfiability & Visualisation with musical meaning in 42 should be simple like in 40 \\
-					43 $\rightarrow$ 42 & Satisfiability & Visualisation of pitch in 43 should have a musical meaning like in 42 \\
-					44 $\rightarrow$ 42 & Satisfiability & Visualisation of dynamics in 44 should have a musical meaning like in 42 \\
-					45 $\rightarrow$ 42 & Satisfiability & Visualizations of the timbre in 45 should have a musical meaning like in 42 \\
-					46 $\rightarrow$ 42 & Satisfiability & Fingering Viewer in 46 should have musical meaning like in 42 \\
-					47 $\rightarrow$ 42 & Satisfiability & Graphics tongue or blowing in 47 should have musical meaning like in 42 \\
-					48 $\rightarrow$ 47 & Satisfiability & Showing remedy for bad attack in 48 can only be done after diagnose in 47 \\
-					49 $\rightarrow$ 47 & Satisfiability & Correct attack diagram in 49 is needed for creating correct attack in 47 \\
-					50 $\rightarrow$ 47 & Satisfiability & 3D representation in 50 is needed for creating correct in 47 \\
-					51 $\rightarrow$ 47 & Satisfiability & Content for correct attack in 51 is needed for creating correct attack in 47 \\
-					51 $\rightarrow$ 59 & Satisfiability & VEMUS content in 51 is needed for the content repository in 59 \\
-					52 $\rightarrow$ 51 & Satisfiability & Preparatory exercises in 52 are part of content in 51 \\
-					53 $\rightarrow$ 26 & Satisfiability & Choosing content flexibly in 53 means content gets rearranged like in 26 \\
-					55 $\rightarrow$ 54 & Satisfiability & Conversion to known programs in 55 means consistency with school-based work in 54 \\
-					57 $\rightarrow$ 13 & Satisfiability & Organizing content according to VEMUS in 57 means using VEMUS like in 13 \\
-					57 $\rightarrow$ 56 & Satisfiability & Organizing  according to VEMUS in 57 means content organized like in 56 \\
-					58 $\rightarrow$ 26 & Satisfiability & Content updated/rearranged in 58 is the same as in 26 \\
-					60 $\rightarrow$ 25 & Satisfiability & Teachers managing content in 60 is similar to creating content in 25\\
-					60 $\rightarrow$ 26 & Satisfiability & Teachers managing content in 60 means it will be updated like in 26 \\
-				\end{tabular}
-				\caption{Dependencies extracted from the requirements in \cite{VEMUS} (Part 3)}
-				\label{table:dep3}
-			\end{table}
-
-			Most dependencies are of the type \textit{Satisfiability}, since there is mostly one main requirement, which will be further specified in a later requirement. This means that when the later requirement will be satisfied, that will most likely be done by satisfying the main requirement. From the requirements evolution point of view, this means that when the main requirement changes, the other requirements have to change as well. We will further elaborate on this after the dependency graph has been set up. \\
-			From our point of view \textit{Satisfiability} is a better dependency type as \textit{Generalisation/refinement}, since it is not about a different smaller/wider case of the same problem, but the specification of a part of the main problem should comply with the specification of the main problem itself.
+			
 
 		\subsection{Dependency graph}
-		The dependency graph is made in GraphViz, using table \ref{table:dep1}, \ref{table:dep2} and \ref{table:dep3}. The actual graph is shown in .
-
-		In the dependency graph we see a couple of strong indications of how the requirements depend on each other. The first is that some requirements are more general guidelines on which other requirements rely. Examples are requirements 1 and 40, which have a lot of incoming edges and mostly no outgoing ones. \\
-		Another trend is that there are some main/core requirements, which are later defined in more detail, or parts are specified in a more detailed way. In this case we can look at requirements 10, 11, 22 and 42. These are still general requirements, which have a lot of incoming edges, but they also rely on the even more general guidelines that have only incoming edges. \\
-		The graph structure is another intersting aspect to look at. We see that a big part of the graph is connected as a whole, with a couple of loose islands. However, if we look more closely we see that most dependencies are between requirements in the same part of the system. Most dependencies are between requirements that are in the same subsection in Section \ref{sec:case}. The parts can be found in the graph are respectively: the part about visualization and content (requirements in 40's, some 50's), a part about feedback (lower than 5 and 10's), closely related to studying process (30's) and distant learning (20's), which in turn is related to content (some 50's). The loose islands can also be identified: accompanying music (6-9), need for music in rural areas (20-21), tuning (38-39), compatibility with other schools/programs (54-55) and content organisation/VEMUS (13, 56-57). \\
-		Now that all the parts of the analysis have been completed, we will combine them in the next section, and look at what conclusions we can draw with respect to software evolution.
+		
 
 		\subsection{Implications for evolution}
-		For evolution we have to take into account how volatile requirements are, since more volatile requirements can change more easily than stable ones. We will use the requirement assessment to conclude which requirements are more volatile. However, it has no use to do this for all requirements, since for evolution it is only important that requirements not depend on more volatile ones. So we start from the dependency graph and check how volatile the requirements on which many other requirements depend are with respect to the depending requirements. When the depending requirements are more stable, this can be bad for the evolution of the system, as the volatile requirements will more easily change and the stable depending requirements with them. \\
-		First we will look at requirements 1 and 40, which are the general guidelines without outgoing edges. Both requirements are conjunctions, so if one part would be scraped, some other dependencies might also be scraped. Requirement 40 is also a bit vague, but both requirements, on the other hand, are intentions of how something should be, and are core thought about feedback and visualization. This should make them pretty stable, but they are both non-functional. However, from the requirements document as a whole, the intentions seem present in many places, so they are at the core of how the system should interact. This is a good thing for the evolution, as many requirements depend on them and they are not likely to change. \\
-		Then we proceed to requirements 10, 11, 22 and 42, which are the main functional requirements. Requirements 10 and 22 are about feedback, what it should include and it should be possible to get it automatically. These are core features, they are functional, and they contain examples to strenghten the intentions. The quality of the requirements seems to be good, no real indicators of bad requirements. This makes them very stable and reliable, and it is actually a good thing that other requirements build on these requirements. Evolution will probably have little effect on these requirements, which also means the depending requirements have less chance to change because of them. \\
-		Requirements 11 and 42 are a bit more general but are still core concepts, but less functional. Less functional needs some more explanation, since requirements are either functional or non-functional. If we look at 11, we see that the system's feedback should be consisten with real teacher's feedback. This is non-functional in the sense that it does not state what the system should do, but in what way. However, it still indicates that the algorithm for automated feedback should be of such a level, that is consistent with a teacher's feedback. Thus we conclude that these requirements are still pretty stable and this is good for the depending requirements. As a side note, looking at 11, we see that 3, 12 and 30 are more concrete, functional and therefore more stable. Purely from the evolution point of view, this is bad, since the more concrete and stable ones depend on more volatile ones. However, the relations are of the type satisfiability, because they usually make a part of the requirement they depend on more concrete. So the intention in 11 should be used in the more concrete 3, 12 and 30, so this weakens the "stable should not depend on volatile"-statement a bit. \\
-		6, 26 and 47 are other requirements with more dependencies. They all have some shortcomings, where 6 and 26 are more general and non-functional, and 47 combines intention (correct attack) with operation (graphical representation). However, the intentions are strong and they are core features. This is what makes many other requirements depend on them. However, might the system change to a different interface, or might accompanying music through the system not work well enough, the intentions will not hold and all the depending requirements might have to change as well. \\
-		These were the most prominent requirements in the system. The requirements with the most dependencies seem to be the core features, with the strongest intentions. Therefore they are less likely to change, and this is a nice property for the system's evolution. However, we can find cases where the depending requirements are more stable, and this is not a good thing in software evolution, even though there is a clear explanation for why the depending requirements are more stable.
+
 
 	\section{Threats to validity}
-		In this section we will critically look at our own analysis and try to find assumptions and decisions that can invalidate the results, if proven incorrect. \\
-		When looking at the first part of the analysis, we do a manual analysis, which is suspectable to mistakes. Besides that, we only look at the textual requirements and, more precisely, only their description. This totally disregards the explanations and intentions in the rest of the document. While the explanations in the document might be clear, it can be hard to formulate a clear and concise description. This can make things look worse than they actually are. However, this is a flaw inherit to the method we are using, and it is not so bad, since the outcome of this analysis is not the most important part of the analysis and also not the only part of it. \\
-		The dependencies are also manually extracted and there are again possibilities for mistakes. On the other hand, the dependencies all have arguments for their existance in the analysis and they give better understanding and good insights. \\
-		When drawing conclusions about the evolution of the system, we used the fact that requirements for main features/ideas have strong intentions and are supported by more explanations in the whole requirements document. However, although the intentions are strong, this does not make them unchangable. We might have been too optimistic about how stable the requirements are, but the authors seem confident in their intentions. In the worst case, the system is not build the way they like, or it does not meet the expectations in actual usefulness in education. 
+
 
 	\begin{thebibliography}{9}
 		\bibitem{rascal}
