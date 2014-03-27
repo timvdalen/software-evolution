@@ -9,10 +9,15 @@ class TravisReader
       repository = Travis::Repository.find(repoID)   
       @uses_travis = true
       
+      # initializing the counter
+      @n_passed = 0
+      @n_failed = 0
+      
       # getting values about the builds
-      builds = repository.builds
-      @n_passed = builds.count{ |b| b.passed?}
-      @n_failed = builds.count{ |b| b.failed?}
+      repository.each_build do |build|
+        @n_passed += 1 if build.passed?
+        @n_failed += 1 if build.failed?
+      end
       
     rescue
       # repository can not be found
