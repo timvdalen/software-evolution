@@ -2,6 +2,10 @@
 # Reads a Travis repo and tries to get information about it
 class TravisReader
   
+  # creating getters for those attributes
+  attr_reader :slug, :uses_travis, :n_passed, :n_failed
+  alias_method :uses_travis?, :uses_travis
+  
   # the slug of the github repo
   def initialize(slug)
     begin
@@ -28,26 +32,6 @@ class TravisReader
       # repository can not be found
       @uses_travis = false
     end
-  end
-  
-  # the identifier of the Repository
-  def slug
-    return @slug
-  end
-  
-  # Determines whether the Repository uses Travis.
-  def uses_travis?
-    return @uses_travis
-  end
-  
-  # The number of passed builds
-  def n_passed
-    return @n_passed
-  end
-  
-  # The number of failed builds
-  def n_failed
-    return @n_failed
   end
   
   
