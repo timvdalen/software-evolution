@@ -3,10 +3,11 @@
 class TravisReader
   
   # the slug of the github repo
-  def initialize(repoID)
+  def initialize(slug)
     begin
       # getting repository
-      repository = Travis::Repository.find(repoID)   
+      repository = Travis::Repository.find(slug) 
+      @slug = slug  
       @uses_travis = true
       
       # initializing the counter
@@ -19,10 +20,19 @@ class TravisReader
         @n_failed += 1 if build.failed?
       end
       
+      # clear caches to remove build information from the memory
+      Travis.clear_cache
+      client.clear_cache
+      
     rescue
       # repository can not be found
       @uses_travis = false
     end
+  end
+  
+  # the identifier of the Repository
+  def slug
+    return @slug
   end
   
   # Determines whether the Repository uses Travis.
