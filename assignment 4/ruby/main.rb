@@ -32,7 +32,7 @@ travis_enabled = travis_readers.select { |reader| reader.uses_travis? }
 
 # writing to a CSV file
 CSV.open(output, "wb") do |csv|
-  csv << ["slug", "travis id" "commits passed", "commits failed", "pr passed", "pr failed"]
+  csv << ["slug", "travis id", "commits passed", "commits failed", "pr passed", "pr failed"]
   travis_enabled.each do |repo|
     puts "Writing #{repo.slug}"
     csv << [repo.slug, repo.travis_id, repo.commits_passed, repo.commits_failed, repo.pr_passed, repo.pr_failed]
