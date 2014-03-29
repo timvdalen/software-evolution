@@ -24,12 +24,9 @@ class TravisReader
         @n_failed += 1 if build.failed?
       end
       
-      # clear caches to remove build information from the memory
-      Travis.clear_cache
-      client.clear_cache
-      
     rescue
       # repository can not be found
+      puts "ERROR: #{$!}"
       @uses_travis = false
     end
   end

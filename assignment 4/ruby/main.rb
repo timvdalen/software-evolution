@@ -6,29 +6,35 @@ require './travis_reader.rb'
 require 'travis/client/session'
 require 'csv'
 
+# reading arguments to find input and output file location
+input = "./" + ARGV[0] # first we expect the input file location
+output = "./" + ARGV[1] # then we expect the output file location
+
 # Reading the input file
-urls = CSV.read("./input.csv", {:headers => true})
+urls = CSV.read(input, {:headers => true})
 
 # Getting the slug values
 slugs = urls.map do |row|
   url = row[0]
-  match = /https:\/\/github.com\/(.+)/.match(url)[1]
-  puts match
-  match
+  /https:\/\/github.com\/(.+)/.match(url)[1]
 end
 
 # setting up session
 session = Travis::Client::Session.new
-session.api_endpoint = "https://api.travis-ci.org"
+session.api_endpoint = "https://tue.travis-ci.org"
 
 #  getting Travis information about repo's that use Travis
-travis_readers = slugs.map { |slug| TravisReader.new(slug) }
+travis_readers = slugs.map do |slug| 
+  puts "Analyzing #{slug}"
+  TravisReader.new(slug)
+end
 travis_enabled = travis_readers.select { |reader| reader.uses_travis? }
 
 # writing to a CSV file
-CSV.open("./output.csv", "wb") do |csv|
+CSV.open(output, "wb") do |csv|
   csv << ["slug", "passed", "failed"]
   travis_enabled.each do |repo|
+    puts "Writing #{repo.slug}"
     csv << [repo.slug, repo.n_passed, repo.n_failed]
   end
 end
