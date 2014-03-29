@@ -3,7 +3,7 @@
 class TravisReader
   
   # creating getters for those attributes
-  attr_reader :slug, :uses_travis, :n_passed, :n_failed
+  attr_reader :slug, :uses_travis, :commits_passed, :commits_failed, :pr_passed, :pr_failed, :travis_id
   alias_method :uses_travis?, :uses_travis
   
   # the slug of the github repo
@@ -15,14 +15,24 @@ class TravisReader
       @uses_travis = true
       
       # initializing the counter
-      @n_passed = 0
-      @n_failed = 0
+      @commits_passed = 0
+      @commits_failed = 0
+      # pull requests
+      @pr_passed = 0
+      @pr_failed = 0
       
       # getting values about the builds
       repository.each_build do |build|
-        @n_passed += 1 if build.passed?
-        @n_failed += 1 if build.failed?
+        if build.pull_request? # this is a pull request
+          @pr_passed += 1 if build.passed?
+          @pr_failed += 1 if build.failed?
+        else # commit
+          @commits_passed += 1 if build.passed?
+          @commits_failed += 1 if build.failed?
+        end
       end
+      
+      @travis_id = repository.last_build.repository_id
       
     rescue
       # repository can not be found
