@@ -6,37 +6,42 @@ require './travis_reader.rb'
 require 'travis/client/session'
 require 'csv'
 
+
+# Writes the content of reader to csv
+def write(csv, reader)
+  csv << [reader.slug, reader.travis_id, reader.commits_passed, reader.commits_failed, reader.pr_passed, reader.pr_failed]
+end
+
 # reading arguments to find input and output file location
 input = "./" + ARGV[0] # first we expect the input file location
 output = "./" + ARGV[1] # then we expect the output file location
 
 # Reading the input file
 urls = CSV.read(input, {:headers => true})
-
+  
 # Getting the slug values
 slugs = urls.map do |row|
-  url = row[0]
-  /https:\/\/github.com\/(.+)/.match(url)[1]
+  url = row["url"]
+  match = /https:\/\/api.github.com\/repos\/(.+)/.match(url)[1]
 end
 
 # setting up session
-session = Travis::Client::Session.new
-session.api_endpoint = "https://tue.travis-ci.org"
+client = Travis::Client.new
+client.session.api_endpoint = "https://tue.travis-ci.org"
 
-#  getting Travis information about repo's that use Travis
-travis_readers = slugs.map do |slug| 
-  puts "Analyzing #{slug}"
-  TravisReader.new(slug)
-end
-travis_enabled = travis_readers.select { |reader| reader.uses_travis? }
-
-# writing to a CSV file
-CSV.open(output, "wb") do |csv|
+# immediately writing to the output file
+CSV.open(output, "w") do |csv|
   csv << ["slug", "travis id", "commits passed", "commits failed", "pr passed", "pr failed"]
-  travis_enabled.each do |repo|
-    puts "Writing #{repo.slug}"
-    csv << [repo.slug, repo.travis_id, repo.commits_passed, repo.commits_failed, repo.pr_passed, repo.pr_failed]
+    
+  # looping over all repositories
+  slugs.each do |slug|
+    puts "Analyzing #{slug}"
+    reader = TravisReader.new(slug, client)
+    # write it to the csv file, if it uses travis
+    write(csv, reader) if reader.uses_travis?
   end
 end
+
+
 
 

@@ -7,10 +7,10 @@ class TravisReader
   alias_method :uses_travis?, :uses_travis
   
   # the slug of the github repo
-  def initialize(slug)
+  def initialize(slug, client)
     begin
       # getting repository
-      repository = Travis::Repository.find(slug) 
+      repository = client.repo(slug) 
       @slug = slug  
       @uses_travis = true
       
@@ -32,7 +32,10 @@ class TravisReader
         end
       end
       
-      @travis_id = repository.last_build.repository_id
+      @travis_id = repository.id
+      
+      # clearing cache to save memory space
+      client.clear_cache
       
     rescue
       # repository can not be found
