@@ -1,0 +1,50 @@
+-- amount of contributors per repo (using unfiltered id's)
+SELECT repo_id, COUNT(user_id) as contributors 
+FROM project_members 
+WHERE repo_id IN (SELECT id  
+                  FROM projects 
+                  WHERE projects.deleted = 0 AND 
+                        projects.forked_from IS NULL AND 
+                        projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+                       (projects.language = "Java" OR projects.language = "Ruby" OR projects.language = "Python") AND 
+                        EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+                                FROM project_members 
+                                WHERE project_members.repo_id = projects.id  
+                                HAVING usercount >= 10) AND 
+                        EXISTS (SELECT pull_requests.id, commits.id 
+                                FROM pull_requests, commits 
+                                WHERE pull_requests.base_repo_id = projects.id AND 
+                                      commits.project_id = projects.id)) 
+GROUP BY repo_id 
+ORDER BY repo_id ASC;
+
+-- amount of pull requests last month (using unfiltered id's)
+SELECT base_repo_id, COUNT(pull_requests.id) as pull_reqs_last_month 
+FROM pull_requests, pull_request_history 
+WHERE pull_requests.id = pull_request_history.pull_request_id AND 
+      pull_request_history.action = "opened" and 
+      pull_request_history.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) AND 
+      pull_requests.base_repo_id IN (SELECT id 
+                  FROM projects 
+                  WHERE projects.deleted = 0 AND 
+                        projects.forked_from IS NULL AND 
+                        projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+                       (projects.language = "Java" OR projects.language = "Ruby" OR projects.language = "Python") AND 
+                        EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+                                FROM project_members 
+                                WHERE project_members.repo_id = projects.id 
+                                HAVING usercount >= 10) AND 
+                        EXISTS (SELECT pull_requests.id, commits.id 
+                                FROM pull_requests, commits 
+                                WHERE pull_requests.base_repo_id = projects.id AND 
+                                      commits.project_id = projects.id)) 
+GROUP BY base_repo_id 
+ORDER BY base_repo_id ASC;
+
+-- amount of commits last month (using unfiltered id's)
+SELECT project_id, COUNT(id) as commits_last_month 
+FROM commits 
+WHERE commits.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) AND 
+      project_id IN (--id's--) 
+GROUP BY project_id 
+ORDER BY project_id ASC;?
