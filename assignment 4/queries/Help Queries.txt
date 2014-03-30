@@ -47,4 +47,4 @@ FROM commits
 WHERE commits.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) AND 
       project_id IN (--id's--) 
 GROUP BY project_id 
-ORDER BY project_id ASC;?
+ORDER BY project_id ASC;

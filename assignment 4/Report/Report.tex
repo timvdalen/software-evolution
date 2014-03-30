@@ -56,8 +56,22 @@
 		Now that we know what we are looking into, we can proceed by elaborating on what steps we have to take to extract and analyse data from the systems we are considering. The process consists of three steps: extracting data about GitHub projects throught GHTorrent's MySQL database, extracting continuous integration data via Travis CI, and doing statistical tests using R. Each of the following subsections will elaborate on a different part of this process.
 		
 		\subsection{Identifying GitHub projects}
-			We
+			We want to extract data about GitHub projects using the GHTorrent MySQL database. The database is has a web interface available at \url{http://ghtorrent.org/dblite/}. For the later analysis, it is important to make the amount of projects managable, and in order to get useful data, we query only specific projects, which are "large and active independent projects". The projects we want all have to meet following requirements, such that they:
+
+			\begin{enumerate}
+				\item are not forks of other repositories,
+				\item have not been deleted,
+				\item have at least 10 different contributors,
+				\item have at least 10 changes during the previous month, where changes are commits or pull requests,
+				\item are at least one year old,
+				\item have both commits and pull requests,
+				\item have been developed in Java, Python or Ruby.
+			\end{enumerate}
 	
+			In one big query, we are able to fullfil all the requirements, except the forth requirement. The main query can be found Appendix \ref{app:mainquery}, it has a statement/subquery in the where clause for each of the other requirements. The forth requirement needs further processing of the commit and pull request tables in the database, which are really big tables. Processing these tables in the main query is very inefficient and results in very long running times. Since the web interface of GHTorrent's MySQL database was very unstable, when we used it, we decided against a query with too long running times. The alternative was smaller helper queries for the more complex data we wanted to extract, which involved counting rows. The queries are shown in Appendix \ref{app:mainquery} and use the main query as a source of pruning the id values of the projects that have to be considered.\\
+
+			When all the data is extracted from the GHTorrents database, we put the extracted .csv-files in an Excel-file, and use the VLOOKUP-function in Microsoft Excel to combine the results of the same projects, using their id values. When all the results are combined, we add the number of commits and pull requests in a new column to get the changes that we need for requirement 4. Then we can easily sort the table on this changes column, and delete all entries that have a value lower than 10. At this point, we have identified the large and active independent projects, and have already gathered a big chunk of data about them.
+
 		\subsection{Travis CI extraction}
 			The 
 	
@@ -80,8 +94,96 @@
 		We can conclude that architecture reconstruction is a nice way of getting insight in the evolution of a software project. All you need to do is reconstruct the architecture of different versions of a project and you have a convenient way of manually comparing the versions. Also using the right tools, it is not too hard to create a tool chain that does this reconstruction in a nice way. However, the more information you want to reconstruct in the diagram, and the nicer you want the diagram to be, the harder it is to get things right. Performance issues, and messy diagrams are the most apparant limitations to architecture reconstruction. We see this as a tradeoff: Having more complex features/visualization will require more computational power, but leaving out features will make room for other features to be more complex and computational demanding.
 
 	\appendix
-	\section{Queries}
-		blabla
+	\section{Main query}
+	\label{app:mainquery}
+	This is the main query to get a list of GitHub repositories that meet all requirements for large and active independent repositories, except for one: at least 10 changes (commits/pull requests) in the past month. The SELECT-statement is big to extract as much data as we can for the analysis.
+	
+	{\scriptsize
+	\begin{verbatim}
+SELECT id, url, name, language, 
+       TIMESTAMPDIFF(day, DATE_FORMAT(projects.created_at,"\%Y-\%m-\%d"), "2014-03-06") as age_days 
+FROM projects 
+WHERE -- not deleted
+      projects.deleted = 0 AND 
+      -- not a fork of another project
+      projects.forked_from IS NULL AND 
+      -- at least 1 year old
+      projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+      -- written in Java/Ruby/Python
+     (projects.language = "Java" OR projects.language = "Ruby" OR projects.language = "Python") AND 
+      -- at least 10 different users
+      EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+              FROM project_members 
+              WHERE project_members.repo_id = projects.id  
+              HAVING usercount >= 10) AND 
+      -- at least 1 commit and 1 pull request
+      EXISTS (SELECT pull_requests.id, commits.id 
+              FROM pull_requests, commits 
+              WHERE pull_requests.base_repo_id = projects.id AND 
+                    commits.project_id = projects.id);
+	\end{verbatim}
+	}
+	
+	\section{Helper queries}
+	\label{app:helpquery}
+	The helper queries fullfill the requirement that was not met in the main query, and some queries get extra data for the analysis. All the queries use the main query as a way to find a smaller set of project id's to check. However, the main query as subquery was too complex for the commits helper query, since the commits table has over 90 million entries. There we used a list of comma separated id values, custom made by copying the id column of the main query, and replacing newlines by commas, using Notepad++.
+	
+	{\scriptsize
+	\begin{verbatim}
+-- amount of contributors per repo (using unfiltered id's)
+SELECT repo_id, COUNT(user_id) as contributors 
+FROM project_members 
+WHERE repo_id IN (SELECT id  
+                  FROM projects 
+                  WHERE projects.deleted = 0 AND 
+                        projects.forked_from IS NULL AND 
+                        projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+                       (projects.language = "Java" OR projects.language = "Ruby" OR 
+                        projects.language = "Python") AND 
+                        EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+                                FROM project_members 
+                                WHERE project_members.repo_id = projects.id  
+                                HAVING usercount >= 10) AND 
+                        EXISTS (SELECT pull_requests.id, commits.id 
+                                FROM pull_requests, commits 
+                                WHERE pull_requests.base_repo_id = projects.id AND 
+                                      commits.project_id = projects.id)) 
+GROUP BY repo_id 
+ORDER BY repo_id ASC;
+
+-- amount of pull requests last month (using unfiltered id's)
+SELECT base_repo_id, COUNT(pull_requests.id) as pull_reqs_last_month 
+FROM pull_requests, pull_request_history 
+WHERE pull_requests.id = pull_request_history.pull_request_id AND 
+      pull_request_history.action = "opened" and 
+      pull_request_history.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) AND 
+      pull_requests.base_repo_id IN (SELECT id 
+                  FROM projects 
+                  WHERE projects.deleted = 0 AND 
+                        projects.forked_from IS NULL AND 
+                        projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+                       (projects.language = "Java" OR projects.language = "Ruby" OR 
+                        projects.language = "Python") AND 
+                        EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+                                FROM project_members 
+                                WHERE project_members.repo_id = projects.id 
+                                HAVING usercount >= 10) AND 
+                        EXISTS (SELECT pull_requests.id, commits.id 
+                                FROM pull_requests, commits 
+                                WHERE pull_requests.base_repo_id = projects.id AND 
+                                      commits.project_id = projects.id)) 
+GROUP BY base_repo_id 
+ORDER BY base_repo_id ASC;
+
+-- amount of commits last month (using unfiltered id's)
+SELECT project_id, COUNT(id) as commits_last_month 
+FROM commits 
+WHERE commits.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) AND 
+      project_id IN (--id's--) 
+GROUP BY project_id 
+ORDER BY project_id ASC;
+	\end{verbatim}
+	}
 
 	\begin{thebibliography}{9}
 		\bibitem{github}

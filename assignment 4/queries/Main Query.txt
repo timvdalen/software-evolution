@@ -1,4 +1,4 @@
-SELECT id, url, name, language, TIMESTAMPDIFF(day, DATE_FORMAT(projects.created_at,'%Y-%m-%d'), '2014-03-06') as age_days 
+SELECT id, url, name, language, TIMESTAMPDIFF(day, DATE_FORMAT(projects.created_at,"%Y-%m-%d"), "2014-03-06") as age_days 
 FROM projects 
 WHERE projects.deleted = 0 AND 
       projects.forked_from IS NULL AND 
