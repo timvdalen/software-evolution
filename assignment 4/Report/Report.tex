@@ -20,13 +20,37 @@
 		The report has the following structure: In Section 2 we elaborate on the systems we are analyzing, namely GitHub and Travis CI, to provide some insight in what we are investigating. Section 3 is about the methodology of our research and an in-depth look into the tools and programs we use to get our results. Section 4 describes our results and what facts we can derive from them. In Section 5 we discuss threads that can invalidate our research. The report ends with conclusions we can draw from looking into repositories and continuous integration, and their relation to evolution.
 	
 	\section{Background}
-		The general approach of our tool chain is that we take a Java project as input and give a visualized UML class diagram of this Java project as output. In this section we look at the input and output in more detail to indicate what our tool chain exactly accepts and what it returns.
+		As stated in the previous section, we look at repositories on Github and we want to get information about the build
+		made by Travis CI.
 		
 		\subsection{GitHub}
-			We
+			Github\cite{github} is a platform that is build around the version control system git.
+			It allows users to host their git repositories and it supplies a web interface for browsing through repositories and
+			to manage repositories.
+			Github calls their platform \emph{social coding}, by which they mean that they want to provide services such that
+			developers can easily share code, discuss changes and collaborate.
+			Github is very popular for open source projects, but it is also used for commercial projects, where companies can pay
+			to create private projects.
+			At the moment of writing Github is the largest code host and hosts over 11.8 million repositories.
+			
+			One particular feature of Github we look at in this assignment are the pull requests: 
+			For git normal changes are saved as commits (similar to other version control systems),
+			but Github allows users to group a number of commits as a pull requests, which must be first accepted before the
+			changes are applied to the main version of the repository.
+			Those pull requests are introduced such that the changes can be checked on quality before commiting them to the main
+			version.
 		
 		\subsection{Travis CI}
-			The 
+		  Travis CI\cite{travis} is a Continuous Integration system for github.
+		  Travis is used to automatically build and test Github project each time a commit has been made or a pull request
+		  is accepted.
+		  Everytime a build is done, Travis shows the state and keeps a history of the builds which we use in this assignment
+		  to do calculations with.
+		  Travis is used primarly for open source projects as the main version of Travis does not support private
+		  repositories.
+		  There is a version of Travis, that does support private repositories, but this system is not widely used yet.
+		  
+		  
 		
 	\section{Methodology}
 		Now that we know what we are looking into, we can proceed by elaborating on what steps we have to take to extract and analyse data from the systems we are considering. The process consists of three steps: extracting data about GitHub projects throught GHTorrent's MySQL database, extracting continuous integration data via Travis CI, and doing statistical tests using R. Each of the following subsections will elaborate on a different part of this process.
