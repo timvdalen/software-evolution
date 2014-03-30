@@ -73,7 +73,27 @@
 			When all the data is extracted from the GHTorrents database, we put the extracted .csv-files in an Excel-file, and use the VLOOKUP-function in Microsoft Excel to combine the results of the same projects, using their id values. When all the results are combined, we add the number of commits and pull requests in a new column to get the changes that we need for requirement 4. Then we can easily sort the table on this changes column, and delete all entries that have a value lower than 10. At this point, we have identified the large and active independent projects, and have already gathered a big chunk of data about them.
 
 		\subsection{Travis CI extraction}
-			The 
+			In the next step we want information about the builds of the Github project.
+			For this we use a Ruby library from the Travis CI Client\cite{travis.rb}.
+			This library gives us access to information about the builds in Travis CI of a Github project.
+			To use this library we need the slugs of the github repositories.
+			The slug is a part of the URL to the github, in which the user and the repository name are used (for example for the
+			Travis CI Client this would be \texttt{travis-ci/travis.rb}).
+			To get those slugs we read the comma seperated values file, containing all the Github projects that met the
+			requirements and we extract the slugs from the \texttt{url} collumn in that file (we extract the slug using regular
+			expressions).
+			
+			Now we got all the slugs, we can use the Travis CI Client library to try to find the Github project in Travis.
+			If we find the project in Travis then we go through the build history and count the number of passed and failed
+			builds for both the pull requests and the commits (we count all the values separated, so we end with four different
+			values).
+			Then we look for the Travis CI identifier correspending to this Github project.
+			
+			And in the end we write for all the Github repositories which we can find in Travis CI the Travic CI identifier and
+			the build values to a comma seperated values file, such that we can use it in R for the statistical analysis.
+			
+			% TODO: do we add the Ruby script as appendix or do we add it on Peach?
+			The Ruby script we used to extract the information from Travic CI is delivered together with this assignment.
 	
 		\subsection{Statistical analysis}
 			The  
@@ -199,6 +219,10 @@ ORDER BY project_id ASC;
 
 		\bibitem{rstatistic}
 			R, language and environment for statistical computing and graphics, http://http://www.r-project.org/
+			
+		\bibitem{travis.rb}
+		  The Travis CI client, a tool (both a command line client and a Ruby library) to interface with a Travis CI service,
+		  https://github.com/travis-ci/travis.rb
 		
 	\end{thebibliography}
 
