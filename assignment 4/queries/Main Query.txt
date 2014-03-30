@@ -1,0 +1,14 @@
+SELECT id, url, name, language, TIMESTAMPDIFF(day, DATE_FORMAT(projects.created_at,'%Y-%m-%d'), '2014-03-06') as age_days 
+FROM projects 
+WHERE projects.deleted = 0 AND 
+      projects.forked_from IS NULL AND 
+      projects.created_at <= DATE_SUB(NOW(),INTERVAL 1 YEAR) AND 
+     (projects.language = "Java" OR projects.language = "Ruby" OR projects.language = "Python") AND 
+      EXISTS (SELECT COUNT(DISTINCT user_id) as usercount 
+              FROM project_members 
+              WHERE project_members.repo_id = projects.id  
+              HAVING usercount >= 10) AND 
+      EXISTS (SELECT pull_requests.id, commits.id 
+              FROM pull_requests, commits 
+              WHERE pull_requests.base_repo_id = projects.id AND 
+                    commits.project_id = projects.id);
