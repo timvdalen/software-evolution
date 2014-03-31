@@ -1,6 +1,6 @@
 \documentclass[a4paper,11pt]{article}
 
-\usepackage{graphicx, url}
+\usepackage{graphicx, url, verbatim}
 
 %--Title---------
 \title{Software Evolution - Assignment 4 : Testing and repository mining}
@@ -68,7 +68,13 @@
 				\item have been developed in Java, Python or Ruby.
 			\end{enumerate}
 	
-			In one big query, we are able to fullfil all the requirements, except the forth requirement. The main query can be found Appendix \ref{app:mainquery}, it has a statement/subquery in the where clause for each of the other requirements. The forth requirement needs further processing of the commit and pull request tables in the database, which are really big tables. Processing these tables in the main query is very inefficient and results in very long running times. Since the web interface of GHTorrent's MySQL database was very unstable, when we used it, we decided against a query with too long running times. The alternative was smaller helper queries for the more complex data we wanted to extract, which involved counting rows. The queries are shown in Appendix \ref{app:mainquery} and use the main query as a source of pruning the id values of the projects that have to be considered.\\
+			In one big query, we are able to fullfil all the requirements, except the forth requirement. 
+			The main query can be	found in Appendix \ref{app:mainquery}, it has a statement/subquery in the where clause for each of the other requirements. 
+			The forth requirement needs further processing of the commit and pull request tables in the database, which are really big tables. 
+			Processing these tables in the main query is very inefficient and results in very long running times. 
+			Since the web interface of GHTorrent's MySQL database was very unstable, when we used it, we decided against a query with too long running times. 
+			The alternative was smaller helper queries for the more complex data we wanted to extract, which involved counting rows. 
+			The queries are shown in Appendix \ref{app:mainquery} and use the main query as a source of pruning the id values of the projects that have to be considered.\\
 
 			When all the data is extracted from the GHTorrents database, we put the extracted .csv-files in an Excel-file, and use the VLOOKUP-function in Microsoft Excel to combine the results of the same projects, using their id values. When all the results are combined, we add the number of commits and pull requests in a new column to get the changes that we need for requirement 4. Then we can easily sort the table on this changes column, and delete all entries that have a value lower than 10. At this point, we have identified the large and active independent projects, and have already gathered a big chunk of data about them.
 
@@ -93,7 +99,7 @@
 			the build values to a comma seperated values file, such that we can use it in R for the statistical analysis.
 			
 			% TODO: do we add the Ruby script as appendix or do we add it on Peach?
-			The Ruby script we used to extract the information from Travic CI is delivered together with this assignment.
+			The Ruby script we used to extract the information from Travic CI can be found in Appendix \ref{app:ci-extraction}.
 	
 		\subsection{Statistical analysis}
 			Now that we found information about the build history, we want to do a statistical analysis of this data to find
@@ -131,7 +137,7 @@
 		  
 		  To be able to do reliable tests, we do not consider the repositories where one of the $n$-values is lower than five.
 		  
-		  The R-script we use to calculate those values can be found in the appendix.
+		  The R-script we use to calculate those values can be found in Appendix \ref{app:r}.
 			
 	
 	\section{Results and discussion}
@@ -246,6 +252,25 @@ GROUP BY project_id
 ORDER BY project_id ASC;
 	\end{verbatim}
 	}
+	
+	\section{Travis CI Extraction script}
+	\label{app:ci-extraction}
+	This is the Ruby script that executes the Travis CI Extraction and saves it to a comma seperated values file.
+	It contains one TravisReader class which is used to calculate the data about the Travis build history.
+	
+	{\scriptsize 
+		\verbatiminput{../ruby/main.rb}
+		\verbatiminput{../ruby/travis_reader.rb}
+	}
+	
+	\section{Statistical Analysis script}
+	\label{app:r}
+	This is the R script that does the statistical computations and saves it to a file.
+	{\scriptsize
+	  \verbatiminput{../r/analysis.r} 
+	}
+	
+	
 
 	\begin{thebibliography}{9}
 		\bibitem{github}
