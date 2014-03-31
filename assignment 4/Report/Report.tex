@@ -135,10 +135,16 @@
 			
 	
 	\section{Results and discussion}
-		The tool chain is developed for reconstructing architectures, so we applied it on some Java projects to see how it performs and to address the evolution of an existing Java project. In this section we will first compare the results of our own tool chain to the results shown in in the book by Tonella and Potrich, and after that look into the evolution of CyberNeko HTML Parser, by reconstructing the architecture of 2 versions of the project.
+		In this section we will present our results and discuss their meaning. We start by looking into the raw data that we collected and after that look further into the results of our statistical analysis.
 		
 		\subsection{Data}
-			We.
+			First we will look into the GitHub data that we extracted from the GHTorrent database. We have identified 1839 projects in the main query, of which 223 had enough commits and pull request in the last month, to be considered in the rest of the analysis. An important fact is that we use \texttt{NOW()} in the queries, which makes them dependent on the moment they were executed. We ran all the queries the 30th of March 2014. Of the 223 projects that we are going to check Travis CI data for, 70 are developed in Java, 83 in Python and 73 in Ruby. Java projects seem too use the least pull requests in the last month, with a maximum of 26 and the most projects that use no pull request out of the 3 languages. Python and Ruby both have higher amounts of pull requests, with maxima of 97 and 236 respectively, and less projects that use no pull requests. Some Python and Ruby projects even have more pull requests than commits. \\
+
+			The Shared Repository Model of GitHub is more popular for Java projects, while Python and Ruby projects have more users sending pull requests. A reason for this could be that Python and Ruby are scripting languages, of which projects are probably more sought after by webdevelopers. Web developers usually promote usages of existing functionality and building your own project out of existing building blocks. In this process, bugs can be found or useful functionality can be added to the fork, which can lead to more pull requests. Overall, we see that commits (direct code modification) is more popular than pull requests (indirect code modification), with only a small amount of projects having more pull requests than commits. \\
+
+			travis data \\
+
+			R data
 			
 		\subsection{Analysis}
 			Now 
@@ -147,7 +153,7 @@
 		Now 
 	
 	\section{Conclusions}
-		We can conclude that architecture reconstruction is a nice way of getting insight in the evolution of a software project. All you need to do is reconstruct the architecture of different versions of a project and you have a convenient way of manually comparing the versions. Also using the right tools, it is not too hard to create a tool chain that does this reconstruction in a nice way. However, the more information you want to reconstruct in the diagram, and the nicer you want the diagram to be, the harder it is to get things right. Performance issues, and messy diagrams are the most apparant limitations to architecture reconstruction. We see this as a tradeoff: Having more complex features/visualization will require more computational power, but leaving out features will make room for other features to be more complex and computational demanding.
+		W.
 
 	\appendix
 	\section{Main query}
