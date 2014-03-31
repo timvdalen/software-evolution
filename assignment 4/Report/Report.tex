@@ -15,16 +15,16 @@
 	\section{Introduction}
 		In this assignment we look into social coding and continuous integration. We try to find out how continuous integration, which comes down to building and testing, is done in various GitHub \cite{github} projects and whether we can derive a relation between the way in which changes are introduced to a GitHub repository and the chance of the corresponding build to fail. \\
 
-		In order to get all the information we want, we use a couple of tools. GHTorrent \cite{ghtorrent} provides a MySQL database, which we can use to query the metadata of GitHub repositories. We use several MySQL queries to get data for all large and active independent projects. Information about the continuous integration of these projects, we get using Travis CI \cite{travis}. Travis CI is a distributed continuous integration service for projects hosted at GitHub. We can get information about the builds using the API provided by the official Travis CI web interface. When we have extracted all the data, we use R \cite{rstatistic} to do a statistical analysis on the data. \\
+		In order to get all the information we want, we use a couple of tools. GHTorrent \cite{ghtorrent} provides a MySQL database, which we can use to query the metadata of GitHub repositories. We use several MySQL queries to get data for all large and active independent projects. We get information about the continuous integration of these projects using Travis CI \cite{travis}. Travis CI is a distributed continuous integration service for projects hosted at GitHub. We can get information about the builds using the API provided by the official Travis CI web interface. When we have extracted all the data, we use R \cite{rstatistic} to do a statistical analysis on the data. \\
 
 		The report has the following structure: In Section 2 we elaborate on the systems we are analyzing, namely GitHub and Travis CI, to provide some insight in what we are investigating. Section 3 is about the methodology of our research and an in-depth look into the tools and programs we use to get our results. Section 4 describes our results and what facts we can derive from them. In Section 5 we discuss threads that can invalidate our research. The report ends with conclusions we can draw from looking into repositories and continuous integration, and their relation to evolution.
 	
 	\section{Background}
-		As stated in the previous section, we look at repositories on Github and we want to get information about the build
-		made by Travis CI.
+		As stated in the previous section, for this assignment we analyse repositories on Github and we use Travis CI to get
+		additional information about those repositories.
 		
 		\subsection{GitHub}
-			Github\cite{github} is a platform that is build around the version control system git.
+			Github \cite{github} is a platform that is build around the version control system git.
 			It allows users to host their git repositories and it supplies a web interface for browsing through repositories and
 			to manage repositories.
 			Github calls their platform \emph{social coding}, by which they mean that they want to provide services such that
@@ -41,7 +41,7 @@
 			version.
 		
 		\subsection{Travis CI}
-		  Travis CI\cite{travis} is a Continuous Integration system for github.
+		  Travis CI \cite{travis} is a Continuous Integration system for github.
 		  Travis is used to automatically build and test Github project each time a commit has been made or a pull request
 		  is accepted.
 		  Everytime a build is done, Travis shows the state and keeps a history of the builds which we use in this assignment
@@ -80,7 +80,7 @@
 
 		\subsection{Travis CI extraction}
 			In the next step we want information about the builds of the Github project.
-			For this we use a Ruby library from the Travis CI Client\cite{travis.rb}.
+			For this we use a Ruby library from the Travis CI Client \cite{travis.rb}.
 			This library gives us access to information about the builds in Travis CI of a Github project.
 			To use this library we need the slugs of the github repositories.
 			The slug is a part of the URL to the github, in which the user and the repository name are used (for example for the
@@ -107,7 +107,7 @@
 			
 			In this step we want to do a $\chi^2$ test and we want to calculate the odds-ratio for each of the repositories of
 			which we found the build history.
-			To achieve this we use R\cite{r}.
+			To achieve this we use R \cite{r}.
 			R is a software environment which we use for statistical computing.
 			We use two functions from R for our analysis: 
 			\texttt{chisq.test} and \texttt{oddsratio} (the last one comes from the epitools package).
