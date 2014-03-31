@@ -96,7 +96,43 @@
 			The Ruby script we used to extract the information from Travic CI is delivered together with this assignment.
 	
 		\subsection{Statistical analysis}
-			The  
+			Now that we found information about the build history, we want to do a statistical analysis of this data to find
+			the dependencies between the number of passed and failed builds of commits and pull requests.
+			
+			In this step we want to do a $\chi^2$ test and we want to calculate the odds-ratio for each of the repositories of
+			which we found the build history.
+			To achieve this we use R\cite{r}.
+			R is a software environment which we use for statistical computing.
+			We use two functions from R for our analysis: 
+			\texttt{chisq.test} and \texttt{oddsratio} (the last one comes from the epitools package).
+			
+			For each of the repositories we create a contingency table filled with the build information,
+			which we give as input to both of the functions.
+			For our contingency table we look at two properties of the builds: passed or failed and corresponding to a commit or
+			a pull request.
+			Then we create our table as follow:
+			
+			\begin{center}
+			\begin{tabular}{ccc}
+			 & passed & failed\\
+			commits & $n_{commit, passed}$ & $n_{commit, failed}$\\
+			pull requests & $n_{pull request, passed}$ & $n_{pull request, failed}$
+			\end{tabular}
+			\end{center}
+			
+			The values in table are calculated by the Ruby script as exlained in the previous section.
+			
+			Now we do Pearson's $\chi^2$ test using \texttt{chisq.test} from which we take the p-value and the residuals.
+			The p-value corresponds to the probability of this test and the residuals indicate for each of the $n$-values from
+			the table the degree of independency to the other values.
+			And we calculate the oddsratio using \texttt{oddsratio} from which we take again the p-value and a measure which
+			indicate the strength of dependence.
+		  Those values are then saved to a file, which is used for our discussion of the results.
+		  
+		  To be able to do reliable tests, we do not consider the repositories where one of the $n$-values is lower than five.
+		  
+		  The R-script we use to calculate those values can be found in the appendix.
+			
 	
 	\section{Results and discussion}
 		The tool chain is developed for reconstructing architectures, so we applied it on some Java projects to see how it performs and to address the evolution of an existing Java project. In this section we will first compare the results of our own tool chain to the results shown in in the book by Tonella and Potrich, and after that look into the evolution of CyberNeko HTML Parser, by reconstructing the architecture of 2 versions of the project.
@@ -223,6 +259,9 @@ ORDER BY project_id ASC;
 		\bibitem{travis.rb}
 		  The Travis CI client, a tool (both a command line client and a Ruby library) to interface with a Travis CI service,
 		  https://github.com/travis-ci/travis.rb
+		  
+		\bibitem{r}
+		  R, software environment for statistical computing, http://www.r-project.org/
 		
 	\end{thebibliography}
 
