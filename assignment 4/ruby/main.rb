@@ -2,14 +2,15 @@
 # and gives as output whether the repo's use Travis and if it does, the number of passed and failed builds
 
 require 'travis'
-require './travis_reader.rb'
+require './travis_reader.rb' # the location of the Ruby file containing the TravisReader class
 require 'travis/client/session'
 require 'csv'
 
 
 # Writes the content of reader to csv
 def write(csv, reader)
-  csv << [reader.slug, reader.travis_id, reader.commits_passed, reader.commits_failed, reader.pr_passed, reader.pr_failed]
+  csv << [reader.slug, reader.travis_id, reader.commits_passed, reader.commits_failed, 
+    reader.pr_passed, reader.pr_failed]
 end
 
 # reading arguments to find input and output file location

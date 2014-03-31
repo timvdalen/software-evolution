@@ -35,5 +35,6 @@ for (i in 1:nrow(buildinfo)) {
   OUT <- rbind(OUT, ADD) 
 }
 
+# Saving data to output file
 rdata <- as.table(OUT)
 write.csv(rdata, "rdata.csv", quote = FALSE, row.names = FALSE)
