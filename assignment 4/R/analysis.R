@@ -30,11 +30,8 @@ for (i in 1:nrow(buildinfo)) {
   }
 
   # creating a row for the output data
-  ADD <- matrix(ROW, ncol = ncol(OUT), nrow = 1)
-  ADD[1, 1] <- buildinfo[i, 'slug']
-  for (j in 1:length(row)) {
-    ADD[1, 1 + j] = row[j]
-  }
+  slug <- as.character(buildinfo[i, 'slug'])
+  ADD <- matrix(c(slug, row), ncol = ncol(OUT))
   OUT <- rbind(OUT, ADD) 
 }
 
