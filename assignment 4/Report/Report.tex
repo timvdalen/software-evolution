@@ -148,12 +148,12 @@
 
 			The Shared Repository Model of GitHub is more popular for Java projects, while Python and Ruby projects have more users sending pull requests. A reason for this could be that Python and Ruby are scripting languages, of which projects are probably more sought after by webdevelopers. Web developers usually promote usages of existing functionality and building your own project out of existing building blocks. In this process, bugs can be found or useful functionality can be added to the fork, which can lead to more pull requests. Overall, we see that commits (direct code modification) is more popular than pull requests (indirect code modification), with only a small amount of projects having more pull requests than commits. \\
 
-			travis data \\
+			When we look into the data we got from Travis CI, we see that 17 out of our 223 projects did not use Travis, of which the most where Java projects (11 in total).  About 100 projects were using Travis CI, since we could find them and extract a Travis ID, but they have no builds on Travis, only failed ones, or errored builds, which we filtered out. These projects could have configured Travis not to build, or have other settings that are set in the wrong way, which prevents us from getting data. When we look into the distribution of these projects with little to none builds, with respect to programming language, we see for Java, Python and Ruby respectively a 40-40-20 split. It is strange that out of all projects, the Java projects use Travis the least, since it automatically runs things like unit tests for you, and Java has great support for this.\\
 
-			R data
+			Outside of all the projects that were not using Travis, or didn't use it in the right way, there were projects that just had too little data to fill the contingency table. In most cases, the failed pull request had too little data. This can be explained by the fact that there are less pull requests overall, but we think there is a clearer reason: when a developer has no commit rights, and just suggests a change via a pull request, he/she will try harder to make sure it is a valid change and will not break anything. When the developer has commit rights, he can try out new things more easily, since he also has the power to reverse it again. There is no strong difference between the programming languages, however we can for example see that some Python and Ruby projects had more pull requests and less commits than average, sometimes have too little failed commits, while the other values are high enough. \\
 			
 		\subsection{Analysis}
-			Now 
+			
 			
 	\section{Threads to validity}
 		Now 
