@@ -154,7 +154,7 @@
 		\subsection{Discussion of Statistical Analysis}
 			The next step is to look into the statistical measurements and see if we can derive a relation between the way changes are made to a repository and the chance that the corresponding build fails. Since we use the $\chi^2$ test, we need a null hypothesis, which will be that the way changes are made to the repository is independent from the chance the build fails. The odds ratio tells us whether it is more likely that a build that passes the tests comes from a commit or a pull request, if it is above 1, passed builds are more likely to come from a commit, if it is below 1, passed builds are more likely to come from a pull request. \\
 
-			We use the p-value of the $\chi^2$ test to see if the test was statistically significant, and if not, we can reject the null hypothesis. This means that we are not sure whether the way of changing a repository is influenced by the correctness of the build. We cannot derive anything else from this! Furthermore, we can look into the odds ratio's p-value, too see if it is statistically significant. If so, we can use it to state how likely it is that the way of chaning influences correctness of build. \\
+			We use the p-value of the $\chi^2$ test to see if the test was statistically significant, and if not, we can reject the null hypothesis. This means that we are not sure whether the way of changing a repository is influenced by the correctness of the build. We cannot derive anything else from this! Furthermore, we can look into the odds ratio's p-value, to see if it is statistically significant. If so, we can use it to state how likely it is that the way of chaning influences correctness of build. \\
 			
 			Now that we know what to look for we can start looking into the data. When we take $0.05$ as a threshold for the p-values, we see that for 45 projects, we can reject the null hypothesis, while for 39 projects we do not reject the null hypothesis with 95\% confidence. For all but one project where we cannot reject the null hypothesis, the p-value for the odds ratio also indicates that it is statistically significant. In most cases, the odds ratio is bigger than 1, which means that passed builds are more likely to come from a commit. However, the values are usually pretty close to 1, with only 8 projects having a value bigger than 1.4, and 10 below 1.\\
 
@@ -162,7 +162,14 @@
 
 			The age of the project does not seem to correlate with the relation we are looking for. When looking at the 4 oldest repositories in our dataset, 2 of them have p-values lower than 0.001, and 2 bigger than 0.8. In the younger projects, we see the same kind of mixture of significant and insignificant results, and residuals and odss ratios do not seem to increase or decrease over time. \\
 
-			
+			The number of contributors does give us some information.
+			For the projects with a low number of contributors we find that we can not reject the null hypothesis for most of the
+			project, but about a third of those projects do have a statistically significant odds ratio.
+			For the projects with an average number of contributors, almost half of them have a statistically significant odds
+			ratio and for the project with a high number of contributors this seems to be the same.
+			So there seems to be a small relation between the number of contributors and the rejection of the null hypothesis,
+			with that for projects with a lower number of contributors we more often can not reject the null hypothesis compared
+			to the other projects.
 			
 	\section{Threads to validity}
 		Now 
